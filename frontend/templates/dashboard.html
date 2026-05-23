@@ -1,0 +1,356 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - FinanceAI{% endblock %}
+
+{% block content %}
+<div class="page-content">
+<div class="container-fluid px-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 pt-2">
+        <div>
+            <h2 class="fw-bold mb-0"><i class="fas fa-chart-pie text-gradient me-2"></i>Dashboard</h2>
+            <p class="text-muted mb-0 mt-1">Overview of your financial health</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-glass btn-sm" onclick="loadDashboardData()">
+                <i class="fas fa-sync-alt me-1"></i>Refresh
+            </button>
+            <a href="/transactions" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus me-1"></i>Add Transaction
+            </a>
+        </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon success"><i class="fas fa-arrow-trend-up"></i></div>
+                <div class="stat-value text-success" id="totalIncome">₹0.00</div>
+                <div class="stat-label">Total Income</div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon danger"><i class="fas fa-arrow-trend-down"></i></div>
+                <div class="stat-value text-danger" id="totalExpense">₹0.00</div>
+                <div class="stat-label">Total Expenses</div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon primary"><i class="fas fa-wallet"></i></div>
+                <div class="stat-value" id="netBalance">₹0.00</div>
+                <div class="stat-label">Net Balance</div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon warning"><i class="fas fa-list-check"></i></div>
+                <div class="stat-value" id="transactionCount">0</div>
+                <div class="stat-label">Transactions</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-8">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0"><i class="fas fa-chart-area me-2 text-primary"></i>Monthly Trend</h5>
+                    <span class="badge bg-primary">Income vs Expense</span>
+                </div>
+                <div class="card-body">
+                    <canvas id="monthlyTrendChart" height="220"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0"><i class="fas fa-chart-pie me-2 text-warning"></i>Categories</h5>
+                    <span class="badge bg-warning">By Amount</span>
+                </div>
+                <div class="card-body">
+                    <canvas id="categoryChart" height="220"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Transactions + Financial Tips -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0"><i class="fas fa-clock-rotate-left me-2 text-info"></i>Recent Transactions</h5>
+                    <a href="/transactions" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th>Category</th>
+                                    <th>Type</th>
+                                    <th class="text-end">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentTransactionsTable">
+                                <tr><td colspan="6" class="text-center text-muted py-4">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Tips -->
+        <div class="col-lg-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="fw-bold mb-0"><i class="fas fa-lightbulb me-2 text-warning"></i>Smart Tips</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="tips-section" style="border:none; border-radius:0 0 var(--radius-lg) var(--radius-lg);">
+                        <div class="tip-item">
+                            <div class="tip-icon" style="background:rgba(16,185,129,0.12);color:var(--accent-success);">
+                                <i class="fas fa-piggy-bank"></i>
+                            </div>
+                            <div>
+                                <h6>50/30/20 Rule</h6>
+                                <p>Spend 50% on needs, 30% on wants, and save at least 20% of your monthly income.</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon" style="background:rgba(14,165,233,0.12);color:var(--accent-primary);">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div>
+                                <h6>SIP Investment</h6>
+                                <p>Start a Systematic Investment Plan (SIP) with as low as ₹500/month in mutual funds.</p>
+                            </div>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-icon" style="background:rgba(245,158,11,0.12);color:var(--accent-warning);">
+                                <i class="fas fa-shield-halved"></i>
+                            </div>
+                            <div>
+                                <h6>Emergency Fund</h6>
+                                <p>Keep 3–6 months of expenses as an emergency fund in a liquid savings account.</p>
+                            </div>
+                        </div>
+                        <div class="tip-item" style="border-bottom:none;">
+                            <div class="tip-icon" style="background:rgba(139,92,246,0.12);color:var(--accent-purple);">
+                                <i class="fas fa-receipt"></i>
+                            </div>
+                            <div>
+                                <h6>Track Every Rupee</h6>
+                                <p>Log daily expenses — people who track spending save 20% more on average.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Savings Rate Bar -->
+    <div class="card mb-4" id="savingsRateCard" style="display:none;">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="fw-bold mb-0"><i class="fas fa-percent me-2 text-success"></i>Monthly Savings Rate</h6>
+                <span class="fw-bold text-success" id="savingsRateText">0%</span>
+            </div>
+            <div class="progress" style="height:10px;">
+                <div class="progress-bar bg-success" id="savingsRateBar" style="width:0%"></div>
+            </div>
+            <small class="text-muted mt-1 d-block" id="savingsRateHint">Add income & expense transactions to see your savings rate.</small>
+        </div>
+    </div>
+
+</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+if (!AuthManager.isLoggedIn()) window.location.href = '/login';
+
+document.addEventListener('DOMContentLoaded', loadDashboardData);
+
+let monthlyChart = null;
+let categoryChart = null;
+
+// Refresh charts when theme toggles
+window.refreshChartsForTheme = function(theme) {
+    if (lastMonthlyData) renderMonthlyChart(lastMonthlyData);
+    if (lastCategoryData) renderCategoryChart(lastCategoryData);
+};
+
+let lastMonthlyData = null;
+let lastCategoryData = null;
+
+async function loadDashboardData() {
+    try {
+        const res = await apiGet('/api/dashboard/summary');
+        if (!res || !res.success) return;
+
+        const s = res.summary;
+        document.getElementById('totalIncome').textContent    = formatCurrency(s.total_income);
+        document.getElementById('totalExpense').textContent   = formatCurrency(s.total_expense);
+        document.getElementById('netBalance').textContent     = formatCurrency(s.balance);
+        document.getElementById('transactionCount').textContent = s.transaction_count;
+
+        const balEl = document.getElementById('netBalance');
+        balEl.className = `stat-value ${s.balance >= 0 ? 'text-success' : 'text-danger'}`;
+
+        // Savings rate
+        if (s.total_income > 0) {
+            const rate = Math.max(0, ((s.total_income - s.total_expense) / s.total_income * 100)).toFixed(1);
+            document.getElementById('savingsRateText').textContent = rate + '%';
+            document.getElementById('savingsRateBar').style.width = Math.min(100, rate) + '%';
+            document.getElementById('savingsRateHint').textContent =
+                rate >= 20 ? '✅ Great! You are saving well above the 20% target.' :
+                rate >= 10 ? '⚠️ You are saving, but aim for 20%+ for financial security.' :
+                             '❌ Low savings rate. Try to reduce discretionary spending.';
+            document.getElementById('savingsRateCard').style.display = 'block';
+        }
+
+        renderRecentTransactions(res.recent_transactions);
+        lastMonthlyData  = res.monthly_trend;
+        lastCategoryData = res.category_breakdown;
+        renderMonthlyChart(res.monthly_trend);
+        renderCategoryChart(res.category_breakdown);
+
+    } catch (e) {
+        console.error('Dashboard error:', e);
+    }
+}
+
+function renderRecentTransactions(transactions) {
+    const tbody = document.getElementById('recentTransactionsTable');
+    if (!transactions || transactions.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">No transactions yet. <a href="/transactions">Add one →</a></td></tr>';
+        return;
+    }
+    tbody.innerHTML = transactions.map(t => `
+        <tr>
+            <td><span class="badge bg-secondary">${t.id}</span></td>
+            <td>${t.date}</td>
+            <td>${t.description || '-'}</td>
+            <td><span class="badge bg-secondary">${t.category}</span></td>
+            <td><span class="badge ${t.type === 'income' ? 'bg-success' : 'bg-danger'}">${t.type}</span></td>
+            <td class="text-end fw-bold ${t.type === 'income' ? 'text-success' : 'text-danger'}">${formatCurrency(t.amount)}</td>
+        </tr>
+    `).join('');
+}
+
+function getChartColors(isDark) {
+    return {
+        grid:   isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+        text:   isDark ? '#94a3b8' : '#64748b',
+        legend: isDark ? '#cbd5e1' : '#475569'
+    };
+}
+
+function renderMonthlyChart(monthlyData) {
+    const ctx = document.getElementById('monthlyTrendChart').getContext('2d');
+    if (monthlyChart) monthlyChart.destroy();
+
+    const months = Object.keys(monthlyData).sort();
+    if (months.length === 0) return;
+
+    const isDark = ThemeManager.getCurrent() === 'dark';
+    const c = getChartColors(isDark);
+
+    monthlyChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: months,
+            datasets: [
+                {
+                    label: 'Income',
+                    data: months.map(m => monthlyData[m].income),
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16,185,129,0.08)',
+                    fill: true, tension: 0.4, borderWidth: 2, pointRadius: 4,
+                    pointBackgroundColor: '#10b981'
+                },
+                {
+                    label: 'Expense',
+                    data: months.map(m => monthlyData[m].expense),
+                    borderColor: '#ef4444',
+                    backgroundColor: 'rgba(239,68,68,0.08)',
+                    fill: true, tension: 0.4, borderWidth: 2, pointRadius: 4,
+                    pointBackgroundColor: '#ef4444'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { labels: { color: c.legend, font: { size: 12 } } },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => ' ' + formatCurrency(ctx.raw)
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: { color: c.text },
+                    grid:  { color: c.grid }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: c.text,
+                        callback: v => '₹' + (v >= 1000 ? (v/1000).toFixed(0) + 'K' : v)
+                    },
+                    grid: { color: c.grid }
+                }
+            }
+        }
+    });
+}
+
+function renderCategoryChart(categoryData) {
+    const ctx = document.getElementById('categoryChart').getContext('2d');
+    if (categoryChart) categoryChart.destroy();
+
+    const cats = Object.keys(categoryData);
+    if (cats.length === 0) return;
+
+    const isDark = ThemeManager.getCurrent() === 'dark';
+    const colors = ['#0ea5e9','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899','#6366f1','#84cc16'];
+
+    categoryChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: cats,
+            datasets: [{ data: cats.map(c => categoryData[c]), backgroundColor: colors, borderWidth: 2,
+                borderColor: isDark ? '#1e293b' : '#ffffff' }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { color: isDark ? '#cbd5e1' : '#475569', font: { size: 11 }, padding: 12 }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => ' ' + formatCurrency(ctx.raw)
+                    }
+                }
+            },
+            cutout: '60%'
+        }
+    });
+}
+</script>
+{% endblock %}

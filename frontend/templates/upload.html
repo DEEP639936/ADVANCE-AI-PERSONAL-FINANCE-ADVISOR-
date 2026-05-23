@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block title %}Upload CSV - FinanceAI{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="background: var(--bg-primary); min-height: calc(100vh - 140px);">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold"><i class="fas fa-cloud-upload-alt text-gradient me-2"></i>Upload Transactions</h2>
+                <p class="text-muted">Import your transaction history from CSV</p>
+            </div>
+
+            <div class="card">
+                <div class="card-body p-5">
+                    <div class="upload-area" id="uploadArea">
+                        <i class="fas fa-file-csv fa-3x text-muted mb-3"></i>
+                        <h5>Drag & drop your CSV file here</h5>
+                        <p class="text-muted">or click to browse</p>
+                        <input type="file" id="csvFile" accept=".csv" class="d-none">
+                        <button class="btn btn-primary" onclick="document.getElementById('csvFile').click()">
+                            <i class="fas fa-folder-open me-2"></i>Select File
+                        </button>
+                    </div>
+
+                    <div id="uploadProgress" style="display:none;" class="mt-4">
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" style="width: 100%"></div>
+                        </div>
+                        <p class="text-center text-muted mt-2">Uploading and processing...</p>
+                    </div>
+
+                    <div id="uploadResult" style="display:none;" class="mt-4"></div>
+                </div>
+            </div>
+
+            <!-- CSV Format Guide -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6 class="fw-bold mb-0"><i class="fas fa-info-circle me-2"></i>CSV Format Guide</h6>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Your CSV file should contain these columns:</p>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Column</th>
+                                    <th>Required</th>
+                                    <th>Example</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>date</td><td><span class="badge bg-danger">Yes</span></td><td>2025-01-15</td><td>Transaction date (YYYY-MM-DD)</td></tr>
+                                <tr><td>amount</td><td><span class="badge bg-danger">Yes</span></td><td>45.50</td><td>Transaction amount</td></tr>
+                                <tr><td>category</td><td><span class="badge bg-danger">Yes</span></td><td>Food</td><td>Expense category</td></tr>
+                                <tr><td>description</td><td><span class="badge bg-secondary">No</span></td><td>Lunch at cafe</td><td>Transaction note</td></tr>
+                                <tr><td>type</td><td><span class="badge bg-secondary">No</span></td><td>expense</td><td>expense or income (default: expense)</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+if (!AuthManager.isLoggedIn()) window.location.href = '/login';
+
+const uploadArea = document.getElementById('uploadArea');
+const fileInput = document.getElementById('csvFile');
+
+uploadArea.addEventListener('click', () => fileInput.click());
+
+uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('dragover');
+});
+
+uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('dragover');
+});
+
+uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+});
+
+fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length) handleFile(e.target.files[0]);
+});
+
+async function handleFile(file) {
+    if (!file.name.endsWith('.csv')) {
+        showResult('error', 'Please upload a CSV file only.');
+        return;
+    }
+
+    document.getElementById('uploadProgress').style.display = 'block';
+    document.getElementById('uploadResult').style.display = 'none';
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+        const res = await fetch('/api/upload/csv', {
+            method: 'POST',
+            headers: AuthManager.getAuthHeaders(),
+            body: formData
+        });
+        const data = await res.json();
+
+        document.getElementById('uploadProgress').style.display = 'none';
+
+        if (data.success) {
+            showResult('success', `<strong>Success!</strong> Imported ${data.imported_count} transactions.`);
+            ToastManager.show(`Imported ${data.imported_count} transactions`, 'success');
+        } else {
+            showResult('error', `<strong>Error:</strong> ${data.message}`);
+        }
+    } catch (e) {
+        document.getElementById('uploadProgress').style.display = 'none';
+        showResult('error', 'Upload failed. Please try again.');
+    }
+}
+
+function showResult(type, message) {
+    const div = document.getElementById('uploadResult');
+    div.style.display = 'block';
+    div.innerHTML = `<div class="alert alert-${type} mb-0">${message}</div>`;
+}
+</script>
+{% endblock %}

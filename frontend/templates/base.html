@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AI Finance Advisor{% endblock %}</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-brain"></i>
+                <span>Finance<span class="gradient-text">AI</span></span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item protected-link" style="display:none;">
+                        <a class="nav-link {% if request.path == '/dashboard' %}active{% endif %}" href="/dashboard">
+                            <i class="fas fa-chart-pie"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item protected-link" style="display:none;">
+                        <a class="nav-link {% if request.path == '/transactions' %}active{% endif %}" href="/transactions">
+                            <i class="fas fa-list-ul"></i> Transactions
+                        </a>
+                    </li>
+                    <li class="nav-item protected-link" style="display:none;">
+                        <a class="nav-link {% if request.path == '/predict' %}active{% endif %}" href="/predict">
+                            <i class="fas fa-wand-magic-sparkles"></i> AI Predict
+                        </a>
+                    </li>
+                    <li class="nav-item protected-link" style="display:none;">
+                        <a class="nav-link {% if request.path == '/analytics' %}active{% endif %}" href="/analytics">
+                            <i class="fas fa-chart-line"></i> Analytics
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Theme Toggle -->
+                    <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+
+                    <!-- Auth Links (shown when logged out) -->
+                    <div id="authLinks" class="d-flex align-items-center gap-2">
+                        <a href="/login" class="btn btn-outline-light btn-sm">Login</a>
+                        <a href="/register" class="btn btn-primary btn-sm">Get Started</a>
+                    </div>
+
+                    <!-- User Menu (shown when logged in) -->
+                    <div id="userMenu" class="dropdown" style="display:none;">
+                        <div class="user-menu" data-bs-toggle="dropdown">
+                            <div class="user-avatar">U</div>
+                            <span class="username d-none d-md-inline">User</span>
+                            <i class="fas fa-chevron-down" style="font-size:0.7rem;"></i>
+                        </div>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/profile"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="/dashboard"><i class="fas fa-chart-pie me-2"></i>Dashboard</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="AuthManager.logout(); return false;"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <span><i class="fas fa-brain me-1"></i>FinanceAI &copy; 2026</span>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <span>AI-Powered Personal Finance</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

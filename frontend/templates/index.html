@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% block title %}FinanceAI - AI-Powered Personal Finance{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container hero-content">
+        <div class="row align-items-center min-vh-80">
+            <div class="col-lg-6">
+                <div class="badge bg-success bg-opacity-20 text-success mb-3 px-3 py-2" style="font-size:0.85rem;">
+                    <i class="fas fa-robot me-1"></i> ML-Powered Finance Intelligence
+                </div>
+                <h1 class="hero-title">
+                    Your Personal<br>
+                    <span class="gradient-text">AI Finance Advisor</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Track expenses, predict categories with 82%+ accuracy, get personalized 
+                    budget recommendations, and improve your financial health score using 
+                    advanced Machine Learning.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="/register" class="btn btn-primary btn-lg px-4">
+                        <i class="fas fa-rocket me-2"></i>Get Started Free
+                    </a>
+                    <a href="/login" class="btn btn-outline-light btn-lg px-4">
+                        <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                    </a>
+                </div>
+                <div class="mt-4 d-flex flex-wrap gap-4 text-white-60">
+                    <div><i class="fas fa-check-circle text-success me-1"></i>Expense Tracking</div>
+                    <div><i class="fas fa-check-circle text-success me-1"></i>ML Predictions</div>
+                    <div><i class="fas fa-check-circle text-success me-1"></i>Smart Budgeting</div>
+                    <div><i class="fas fa-check-circle text-success me-1"></i>Health Score</div>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center mt-5 mt-lg-0">
+                <div class="hero-card">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="stat-icon primary me-3">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                        <div class="text-start">
+                            <h6 class="mb-0 text-white">Financial Health Score</h6>
+                            <small class="text-white-60">AI Calculated</small>
+                        </div>
+                        <div class="ms-auto">
+                            <span class="badge bg-success fs-5 px-3 py-2">78/100</span>
+                        </div>
+                    </div>
+                    <div class="progress mb-4" style="height: 10px; background: rgba(255,255,255,0.1);">
+                        <div class="progress-bar bg-success" style="width: 78%"></div>
+                    </div>
+                    <div class="row g-3 text-center">
+                        <div class="col-4">
+                            <div class="p-3 rounded" style="background: rgba(255,255,255,0.1);">
+                                <div class="fw-bold text-white fs-5">₹42,000</div>
+                                <small class="text-white-60">Income</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-3 rounded" style="background: rgba(255,255,255,0.1);">
+                                <div class="fw-bold text-danger fs-5">$2,850</div>
+                                <small class="text-white-60">Expenses</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-3 rounded" style="background: rgba(255,255,255,0.1);">
+                                <div class="fw-bold text-success fs-5">$1,350</div>
+                                <small class="text-white-60">Savings</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div style="background: var(--bg-primary); padding: 80px 0;">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h6 class="text-uppercase text-muted fw-bold mb-2" style="letter-spacing:2px;">Features</h6>
+            <h2 class="fw-bold mb-3">Powered by Machine Learning</h2>
+            <p class="text-muted" style="max-width:500px; margin:0 auto;">
+                Professional-grade AI models for intelligent personal finance management
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-tags"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Expense Classification</h5>
+                    <p class="text-muted mb-3">
+                        Random Forest classifier with <strong>82%+ accuracy</strong> to auto-categorize 
+                        transactions based on amount, timing, and behavior patterns.
+                    </p>
+                    <span class="badge bg-primary bg-opacity-10 text-primary">Random Forest</span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(5,150,105,0.1)); color: var(--accent-success);">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Financial Health Score</h5>
+                    <p class="text-muted mb-3">
+                        ML-powered health assessment using savings rate, debt-to-income, 
+                        emergency funds, and expense stability metrics.
+                    </p>
+                    <span class="badge bg-success bg-opacity-10 text-success">Regression Model</span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(217,119,6,0.1)); color: var(--accent-warning);">
+                        <i class="fas fa-piggy-bank"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Smart Budgeting</h5>
+                    <p class="text-muted mb-3">
+                        Gradient Boosting model recommends optimal budget allocation 
+                        based on your income, age, and financial goals.
+                    </p>
+                    <span class="badge bg-warning bg-opacity-10 text-warning">Gradient Boosting</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tech Stack -->
+<div style="background: var(--bg-secondary); padding: 60px 0;">
+    <div class="container">
+        <div class="text-center mb-4">
+            <h6 class="text-uppercase text-muted fw-bold mb-2" style="letter-spacing:2px;">Built With</h6>
+        </div>
+        <div class="row justify-content-center g-3">
+            <div class="col-auto">
+                <span class="badge px-3 py-2" style="background: var(--bg-card); border:1px solid var(--border-color); color: var(--text-secondary); font-size:0.9rem;">
+                    <i class="fab fa-python me-1"></i>Python 3.13
+                </span>
+            </div>
+            <div class="col-auto">
+                <span class="badge px-3 py-2" style="background: var(--bg-card); border:1px solid var(--border-color); color: var(--text-secondary); font-size:0.9rem;">
+                    <i class="fas fa-flask me-1"></i>Flask
+                </span>
+            </div>
+            <div class="col-auto">
+                <span class="badge px-3 py-2" style="background: var(--bg-card); border:1px solid var(--border-color); color: var(--text-secondary); font-size:0.9rem;">
+                    <i class="fas fa-brain me-1"></i>scikit-learn
+                </span>
+            </div>
+            <div class="col-auto">
+                <span class="badge px-3 py-2" style="background: var(--bg-card); border:1px solid var(--border-color); color: var(--text-secondary); font-size:0.9rem;">
+                    <i class="fab fa-js me-1"></i>JavaScript
+                </span>
+            </div>
+            <div class="col-auto">
+                <span class="badge px-3 py-2" style="background: var(--bg-card); border:1px solid var(--border-color); color: var(--text-secondary); font-size:0.9rem;">
+                    <i class="fab fa-bootstrap me-1"></i>Bootstrap 5
+                </span>
+            </div>
+            <div class="col-auto">
+                <span class="badge px-3 py-2" style="background: var(--bg-card); border:1px solid var(--border-color); color: var(--text-secondary); font-size:0.9rem;">
+                    <i class="fas fa-chart-bar me-1"></i>Chart.js
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<div style="background: var(--bg-primary); padding: 80px 0;">
+    <div class="container text-center">
+        <h2 class="fw-bold mb-3">Ready to Take Control?</h2>
+        <p class="text-muted mb-4" style="max-width:500px; margin:0 auto;">
+            Join thousands of users who trust FinanceAI to manage their personal finances intelligently.
+        </p>
+        <a href="/register" class="btn btn-primary btn-lg px-5">
+            <i class="fas fa-rocket me-2"></i>Start Your Journey
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}Register - FinanceAI{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-card animate-fade-in">
+        <div class="auth-logo">
+            <i class="fas fa-brain"></i>
+        </div>
+        <h1 class="auth-title">Get Started</h1>
+        <p class="auth-subtitle">Create your account to unlock AI-powered finance</p>
+
+        <form id="registerForm">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="auth-label form-label">Username</label>
+                    <input type="text" class="form-control auth-input" id="regUsername" placeholder="Choose username" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="auth-label form-label">Full Name</label>
+                    <input type="text" class="form-control auth-input" id="regFullName" placeholder="Your name">
+                </div>
+            </div>
+
+            <div class="mb-3 mt-3">
+                <label class="auth-label form-label">Email</label>
+                <input type="email" class="form-control auth-input" id="regEmail" placeholder="your@email.com" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="auth-label form-label">Password</label>
+                <div class="position-relative">
+                    <input type="password" class="form-control auth-input" id="regPassword" placeholder="Min 6 characters" required minlength="6">
+                    <button type="button" class="password-toggle" onclick="togglePassword('regPassword', this)">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="auth-label form-label">Monthly Income (₹)</label>
+                    <input type="number" class="form-control auth-input" id="regIncome" value="50000" min="0">
+                </div>
+                <div class="col-md-6">
+                    <label class="auth-label form-label">Age</label>
+                    <input type="number" class="form-control auth-input" id="regAge" value="30" min="18" max="100">
+                </div>
+            </div>
+
+            <button type="submit" class="auth-btn">
+                <i class="fas fa-user-plus me-2"></i>Create Account
+            </button>
+        </form>
+
+        <div class="text-center mt-4">
+            <p style="color:rgba(255,255,255,0.6);">
+                Already have an account? 
+                <a href="/login" class="auth-link">Sign In</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    showLoading('Creating account...');
+
+    const payload = {
+        username: document.getElementById('regUsername').value,
+        email: document.getElementById('regEmail').value,
+        password: document.getElementById('regPassword').value,
+        full_name: document.getElementById('regFullName').value,
+        monthly_income: parseFloat(document.getElementById('regIncome').value),
+        age: parseInt(document.getElementById('regAge').value),
+        existing_savings: 10000,
+        debt_to_income: 0.15,
+        income_level: 'Medium'
+    };
+
+    try {
+        const res = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        hideLoading();
+
+        if (data.success) {
+            const token = data.token || document.cookie.match(/token=([^;]+)/)?.[1] || '';
+            AuthManager.setAuth(token, data.user);
+            ToastManager.show('Account created successfully!', 'success');
+            setTimeout(() => window.location.href = '/dashboard', 800);
+        } else {
+            ToastManager.show(data.message || 'Registration failed', 'error');
+        }
+    } catch (err) {
+        hideLoading();
+        ToastManager.show('Network error. Please try again.', 'error');
+    }
+});
+
+function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const icon = btn.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fas fa-eye-slash';
+    } else {
+        input.type = 'password';
+        icon.className = 'fas fa-eye';
+    }
+}
+</script>
+{% endblock %}

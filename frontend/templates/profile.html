@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}Profile - FinanceAI{% endblock %}
+
+{% block content %}
+<div class="container py-4" style="background: var(--bg-primary); min-height: calc(100vh - 140px);">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-4">
+                <div class="user-avatar mx-auto mb-3" style="width:80px; height:80px; font-size:2rem;">
+                    <span id="profileInitial">U</span>
+                </div>
+                <h3 class="fw-bold mb-1" id="profileName">User</h3>
+                <p class="text-muted" id="profileEmail">user@example.com</p>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="fw-bold mb-0"><i class="fas fa-user me-2 text-primary"></i>Personal Information</h5>
+                </div>
+                <div class="card-body">
+                    <form id="profileForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Username</label>
+                                <input type="text" class="form-control" id="profUsername" disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="profFullName">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="profEmail" disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Age</label>
+                                <input type="number" class="form-control" id="profAge" min="18" max="100">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="fw-bold mb-0"><i class="fas fa-wallet me-2 text-success"></i>Financial Profile</h5>
+                </div>
+                <div class="card-body">
+                    <form id="financeForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Monthly Income (₹)</label>
+                                <input type="number" class="form-control" id="profIncome" min="0" step="100">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Income Level</label>
+                                <select class="form-select" id="profIncomeLevel">
+                                    <option value="Low">Low</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="High">High</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Current Savings (₹)</label>
+                                <input type="number" class="form-control" id="profSavings" min="0" step="100">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Debt-to-Income Ratio</label>
+                                <input type="number" class="form-control" id="profDTI" min="0" max="1" step="0.01">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <button class="btn btn-primary w-100" onclick="saveProfile()">
+                <i class="fas fa-save me-2"></i>Save Changes
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+if (!AuthManager.isLoggedIn()) window.location.href = '/login';
+
+document.addEventListener('DOMContentLoaded', loadProfile);
+
+async function loadProfile() {
+    const res = await apiGet('/api/auth/me');
+    if (!res || !res.success) return;
+
+    const u = res.user;
+    document.getElementById('profileName').textContent = u.full_name || u.username;
+    document.getElementById('profileEmail').textContent = u.email;
+    document.getElementById('profileInitial').textContent = u.username.charAt(0).toUpperCase();
+
+    document.getElementById('profUsername').value = u.username;
+    document.getElementById('profFullName').value = u.full_name || '';
+    document.getElementById('profEmail').value = u.email;
+    document.getElementById('profAge').value = u.age;
+    document.getElementById('profIncome').value = u.monthly_income;
+    document.getElementById('profIncomeLevel').value = u.income_level;
+    document.getElementById('profSavings').value = u.existing_savings;
+    document.getElementById('profDTI').value = u.debt_to_income;
+}
+
+async function saveProfile() {
+    const payload = {
+        full_name: document.getElementById('profFullName').value,
+        age: parseInt(document.getElementById('profAge').value),
+        monthly_income: parseFloat(document.getElementById('profIncome').value),
+        income_level: document.getElementById('profIncomeLevel').value,
+        existing_savings: parseFloat(document.getElementById('profSavings').value),
+        debt_to_income: parseFloat(document.getElementById('profDTI').value)
+    };
+
+    const res = await apiPost('/api/auth/profile', payload);
+    if (res && res.success) {
+        ToastManager.show('Profile updated successfully', 'success');
+        loadProfile();
+    } else {
+        ToastManager.show('Failed to update profile', 'error');
+    }
+}
+</script>
+{% endblock %}
