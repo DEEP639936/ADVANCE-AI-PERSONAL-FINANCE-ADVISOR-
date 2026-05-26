@@ -1137,3 +1137,157 @@ p { color: var(--text-secondary); }
 /* White text helpers for hero/dark sections */
 .text-white-60 { color: rgba(255,255,255,0.6) !important; }
 .text-white-80 { color: rgba(255,255,255,0.8) !important; }
+
+/* FIX: Improve mobile UI layout and prevent navbar/content overflow */
+@media (max-width: 768px) {
+    body {
+        overflow-x: hidden;
+    }
+
+    .navbar {
+        padding: 0.6rem 0.75rem;
+    }
+
+    .navbar .container-fluid {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    .navbar-brand {
+        font-size: 1.15rem;
+    }
+
+    .navbar-collapse {
+        width: 100%;
+        max-width: 100%;
+        margin-top: 0.75rem;
+        padding: 0.9rem;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .navbar-nav {
+        gap: 0.25rem;
+    }
+
+    .nav-link {
+        width: 100%;
+        padding: 0.75rem 1rem !important;
+        font-size: 0.95rem;
+    }
+
+    .navbar-collapse .d-flex {
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 100%;
+        gap: 0.75rem !important;
+        margin-top: 0.75rem;
+    }
+
+    #authLinks {
+        width: 100%;
+        justify-content: center;
+    }
+
+    #authLinks .btn {
+        flex: 1;
+        max-width: 150px;
+        padding: 0.65rem 0.8rem;
+    }
+
+    .user-menu {
+        max-width: 110px;
+        padding: 0.35rem 0.55rem;
+    }
+
+    .page-content {
+        padding-top: 1rem;
+    }
+
+    .container-fluid {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+
+    .page-content > .container-fluid > .d-flex:first-child {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 1rem;
+    }
+
+    .page-content > .container-fluid > .d-flex:first-child > .d-flex {
+        width: 100%;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem !important;
+    }
+
+    .page-content > .container-fluid > .d-flex:first-child .btn {
+        width: 100%;
+        font-size: 0.9rem;
+        padding: 0.75rem 0.5rem;
+        white-space: normal;
+    }
+
+    .stat-card {
+        padding: 1.25rem;
+        border-radius: 18px;
+        margin-bottom: 0;
+    }
+
+    .stat-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 1.1rem;
+    }
+
+    .stat-value {
+        font-size: 1.45rem;
+        word-break: break-word;
+    }
+
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 0.5rem;
+        padding: 1rem;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    canvas {
+        max-width: 100% !important;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .footer {
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar-brand {
+        font-size: 1rem;
+    }
+
+    .navbar-brand i {
+        font-size: 1.3rem;
+    }
+
+    h2 {
+        font-size: 1.65rem;
+    }
+
+    .stat-value {
+        font-size: 1.35rem;
+    }
+
+    .btn {
+        font-size: 0.85rem;
+    }
+}
