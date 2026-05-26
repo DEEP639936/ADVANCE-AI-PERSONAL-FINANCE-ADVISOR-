@@ -32,13 +32,14 @@ TEMPLATE_DIR = os.path.join(PROJECT_ROOT, 'frontend', 'templates')
 STATIC_DIR   = os.path.join(PROJECT_ROOT, 'frontend', 'static')
 
 app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
-app.secret_key = 'ai-finance-advisor-secret-key-2026-v2'
+aapp.secret_key = os.environ.get('SECRET_KEY', 'ai-finance-advisor-secret-key-2026-v2')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///finance_advisor.db'
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'finance_advisor.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_PATH}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
-CORS(app)
+CORS(app, origins=["*"])
 app.register_blueprint(auth_bp)
 
 # ---------------------------------------------------------------------------

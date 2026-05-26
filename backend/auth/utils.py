@@ -7,10 +7,11 @@ JWT token generation and validation.
 
 import jwt
 import datetime
+import os
 from functools import wraps
 from flask import request, jsonify
 
-SECRET_KEY = 'ai-finance-advisor-jwt-secret-2026'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'ai-finance-advisor-jwt-secret-2026')
 
 def generate_token(user_id, username):
     """Generate JWT token for user."""
