@@ -1,9 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>{% block title %}AI Finance Advisor{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>{% block title %}FinanceAI{% endblock %}</title>
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -22,52 +25,18 @@
     <!-- Toast Container -->
     <div id="toastContainer" class="toast-container"></div>
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg">
+    <!-- =======================
+         DESKTOP NAVBAR (>= 992px)
+         ======================= -->
+    <nav class="navbar navbar-expand-lg d-none d-lg-flex">
         <div class="container-fluid">
-            <!-- LEFT: Hamburger toggler (before logo) -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
-            </button>
-
-            <!-- Brand -->
             <a class="navbar-brand" href="/">
                 <i class="fas fa-brain"></i>
                 <span>Finance<span class="gradient-text">AI</span></span>
             </a>
 
-            <!-- RIGHT CORNER: Always visible on mobile & desktop -->
-            <div class="navbar-actions ms-auto d-flex align-items-center gap-2">
-                <!-- Get Started (shown when logged out via JS) -->
-                <div id="authLinks" class="d-flex align-items-center gap-2">
-                    <a href="/register" class="btn btn-primary btn-sm">Get Started</a>
-                </div>
-
-                <!-- User Menu (shown when logged in via JS) -->
-                <div id="userMenu" class="dropdown" style="display:none;">
-                    <div class="user-menu" data-bs-toggle="dropdown" aria-expanded="false">
-                        <div class="user-avatar">U</div>
-                        <span class="username d-none d-md-inline">User</span>
-                        <i class="fas fa-chevron-down" style="font-size:0.7rem;"></i>
-                    </div>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="/profile"><i class="fas fa-user me-2"></i>Profile</a></li>
-                        <li><a class="dropdown-item" href="/dashboard"><i class="fas fa-chart-pie me-2"></i>Dashboard</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="#" onclick="AuthManager.logout(); return false;"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- SIDEBAR: Full-screen collapse slides from left -->
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <!-- Theme Toggle (first item at top of sidebar) -->
-                <button class="theme-toggle mx-auto" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">
-                    <i class="fas fa-moon"></i>
-                </button>
-
-                <ul class="navbar-nav mx-auto">
+            <div class="collapse navbar-collapse" id="navbarNavDesktop">
+                <ul class="navbar-nav me-auto">
                     <li class="nav-item protected-link" style="display:none;">
                         <a class="nav-link {% if request.path == '/dashboard' %}active{% endif %}" href="/dashboard">
                             <i class="fas fa-chart-pie"></i> Dashboard
@@ -90,21 +59,179 @@
                     </li>
                 </ul>
 
-                <!-- Login at bottom of sidebar (shown when logged out) -->
-                <div id="sidebarAuthLinks" class="d-flex justify-content-center w-100">
-                    <a href="/login" class="btn btn-outline-light w-100">Login</a>
+                <div class="d-flex align-items-center gap-3">
+                    <button class="theme-toggle" id="themeToggleDesktop" title="Toggle theme" aria-label="Toggle theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+
+                    <div id="authLinksDesktop" class="d-flex align-items-center gap-2">
+                        <a href="/login" class="btn btn-outline-light btn-sm">Login</a>
+                        <a href="/register" class="btn btn-primary btn-sm">Get Started</a>
+                    </div>
+
+                    <div id="userMenuDesktop" class="dropdown" style="display:none;">
+                        <div class="user-menu" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="user-avatar">U</div>
+                            <span class="username">User</span>
+                            <i class="fas fa-chevron-down" style="font-size:0.7rem;"></i>
+                        </div>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/profile"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="/dashboard"><i class="fas fa-chart-pie me-2"></i>Dashboard</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="AuthManager.logout(); return false;"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
+    <!-- =======================
+         MOBILE HEADER BAR (< 992px)
+         ======================= -->
+    <header class="mobile-header d-lg-none">
+        <div class="mobile-header-inner">
+            <!-- Left: Menu button opens bottom sheet -->
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open menu">
+                <i class="fas fa-bars-staggered"></i>
+            </button>
+
+            <!-- Center: Brand -->
+            <a class="mobile-brand" href="/">
+                <i class="fas fa-brain"></i>
+                <span>Finance<span class="gradient-text">AI</span></span>
+            </a>
+
+            <!-- Right: Get Started / User avatar -->
+            <div class="mobile-header-actions">
+                <div id="mobileAuthLinks" class="d-flex align-items-center">
+                    <a href="/register" class="btn btn-primary btn-sm">Get Started</a>
+                </div>
+                <div id="mobileUserMenu" class="dropdown" style="display:none;">
+                    <div class="mobile-user-avatar" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span>U</span>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="/profile"><i class="fas fa-user me-2"></i>Profile</a></li>
+                        <li><a class="dropdown-item" href="/dashboard"><i class="fas fa-chart-pie me-2"></i>Dashboard</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="#" onclick="AuthManager.logout(); return false;"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- =======================
+         MOBILE BOTTOM SHEET MENU
+         ======================= -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+    <div class="mobile-bottom-sheet" id="mobileBottomSheet">
+        <!-- Drag handle -->
+        <div class="mobile-sheet-handle" id="mobileSheetHandle">
+            <div class="mobile-sheet-handle-bar"></div>
+        </div>
+
+        <!-- Sheet header -->
+        <div class="mobile-sheet-header">
+            <div class="mobile-sheet-brand">
+                <i class="fas fa-brain"></i>
+                <span>Menu</span>
+            </div>
+            <button class="mobile-sheet-close" id="mobileSheetClose" aria-label="Close menu">
+                <i class="fas fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Navigation links -->
+        <nav class="mobile-sheet-nav">
+            <a class="mobile-nav-item {% if request.path == '/dashboard' %}active{% endif %} protected-link-mobile" href="/dashboard" style="display:none;" data-nav="dashboard">
+                <div class="mobile-nav-icon"><i class="fas fa-chart-pie"></i></div>
+                <span>Dashboard</span>
+                <i class="fas fa-chevron-right mobile-nav-arrow"></i>
+            </a>
+            <a class="mobile-nav-item {% if request.path == '/transactions' %}active{% endif %} protected-link-mobile" href="/transactions" style="display:none;" data-nav="transactions">
+                <div class="mobile-nav-icon"><i class="fas fa-list-ul"></i></div>
+                <span>Transactions</span>
+                <i class="fas fa-chevron-right mobile-nav-arrow"></i>
+            </a>
+            <a class="mobile-nav-item {% if request.path == '/predict' %}active{% endif %} protected-link-mobile" href="/predict" style="display:none;" data-nav="predict">
+                <div class="mobile-nav-icon"><i class="fas fa-wand-magic-sparkles"></i></div>
+                <span>AI Predict</span>
+                <i class="fas fa-chevron-right mobile-nav-arrow"></i>
+            </a>
+            <a class="mobile-nav-item {% if request.path == '/analytics' %}active{% endif %} protected-link-mobile" href="/analytics" style="display:none;" data-nav="analytics">
+                <div class="mobile-nav-icon"><i class="fas fa-chart-line"></i></div>
+                <span>Analytics</span>
+                <i class="fas fa-chevron-right mobile-nav-arrow"></i>
+            </a>
+        </nav>
+
+        <!-- Divider -->
+        <div class="mobile-sheet-divider"></div>
+
+        <!-- Settings row -->
+        <div class="mobile-sheet-settings">
+            <button class="mobile-settings-item" id="mobileThemeToggle">
+                <div class="mobile-settings-icon"><i class="fas fa-moon" id="mobileThemeIcon"></i></div>
+                <span id="mobileThemeLabel">Dark Mode</span>
+                <div class="mobile-toggle-switch">
+                    <div class="mobile-toggle-knob"></div>
+                </div>
+            </button>
+        </div>
+
+        <!-- Bottom action -->
+        <div class="mobile-sheet-footer">
+            <a href="/login" class="mobile-sheet-login-btn" id="mobileSheetLogin">
+                <i class="fas fa-arrow-right-to-bracket"></i>
+                <span>Login to your account</span>
+            </a>
+            <div class="mobile-sheet-user-info" id="mobileSheetUserInfo" style="display:none;">
+                <div class="mobile-sheet-user-avatar">U</div>
+                <div class="mobile-sheet-user-details">
+                    <span class="mobile-sheet-user-name">User</span>
+                    <span class="mobile-sheet-user-email">user@example.com</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =======================
+         MOBILE BOTTOM TAB BAR
+         (shown on protected pages only via JS)
+         ======================= -->
+    <nav class="mobile-tab-bar d-lg-none" id="mobileTabBar" style="display:none;">
+        <a class="mobile-tab-item {% if request.path == '/dashboard' %}active{% endif %}" href="/dashboard" data-tab="dashboard">
+            <i class="fas fa-chart-pie"></i>
+            <span>Dashboard</span>
+        </a>
+        <a class="mobile-tab-item {% if request.path == '/transactions' %}active{% endif %}" href="/transactions" data-tab="transactions">
+            <i class="fas fa-list-ul"></i>
+            <span>Transactions</span>
+        </a>
+        <a class="mobile-tab-item {% if request.path == '/predict' %}active{% endif %}" href="/predict" data-tab="predict">
+            <i class="fas fa-wand-magic-sparkles"></i>
+            <span>AI</span>
+        </a>
+        <a class="mobile-tab-item {% if request.path == '/analytics' %}active{% endif %}" href="/analytics" data-tab="analytics">
+            <i class="fas fa-chart-line"></i>
+            <span>Analytics</span>
+        </a>
+    </nav>
+
+    <!-- =======================
+         MAIN CONTENT
+         ======================= -->
     <main class="main-content">
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
-    <footer class="footer">
+    <!-- =======================
+         FOOTER
+         ======================= -->
+    <footer class="footer d-none d-lg-block">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-md-6">
@@ -121,26 +248,175 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 
-    <!-- Sync sidebar login visibility with auth state (no app.js changes needed) -->
+    <!-- =======================
+         MOBILE UI CONTROLLER
+         ======================= -->
     <script>
     (function() {
-        function syncSidebarAuth() {
-            var sidebarAuth = document.getElementById('sidebarAuthLinks');
-            if (!sidebarAuth) return;
-            var isLoggedIn = !!(localStorage.getItem('auth_token'));
-            sidebarAuth.style.display = isLoggedIn ? 'none' : 'flex';
+        'use strict';
+
+        // ── Elements ──
+        const menuBtn      = document.getElementById('mobileMenuBtn');
+        const closeBtn     = document.getElementById('mobileSheetClose');
+        const overlay      = document.getElementById('mobileMenuOverlay');
+        const sheet        = document.getElementById('mobileBottomSheet');
+        const handle       = document.getElementById('mobileSheetHandle');
+        const themeToggle  = document.getElementById('mobileThemeToggle');
+        const themeIcon    = document.getElementById('mobileThemeIcon');
+        const themeLabel   = document.getElementById('mobileThemeLabel');
+        const tabBar       = document.getElementById('mobileTabBar');
+
+        let isOpen = false;
+        let startY = 0, currentY = 0;
+
+        // ── Open / Close ──
+        function openSheet() {
+            isOpen = true;
+            overlay.classList.add('active');
+            sheet.classList.add('active');
+            document.body.style.overflow = 'hidden';
         }
-        syncSidebarAuth();
+        function closeSheet() {
+            isOpen = false;
+            overlay.classList.remove('active');
+            sheet.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        menuBtn.addEventListener('click', openSheet);
+        closeBtn.addEventListener('click', closeSheet);
+        overlay.addEventListener('click', closeSheet);
+
+        // ── Swipe to close ──
+        handle.addEventListener('touchstart', function(e) {
+            startY = e.touches[0].clientY;
+        }, { passive: true });
+
+        handle.addEventListener('touchmove', function(e) {
+            currentY = e.touches[0].clientY;
+            const diff = currentY - startY;
+            if (diff > 0) {
+                sheet.style.transform = 'translateY(' + diff + 'px)';
+            }
+        }, { passive: true });
+
+        handle.addEventListener('touchend', function() {
+            const diff = currentY - startY;
+            if (diff > 80) {
+                closeSheet();
+            }
+            sheet.style.transform = '';
+            startY = 0; currentY = 0;
+        });
+
+        // ── Theme toggle in bottom sheet ──
+        function updateMobileThemeUI() {
+            const theme = document.documentElement.getAttribute('data-theme') || 'light';
+            const isDark = theme === 'dark';
+            themeIcon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+            themeLabel.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+            themeToggle.classList.toggle('active', isDark);
+        }
+
+        themeToggle.addEventListener('click', function() {
+            if (window.ThemeManager && ThemeManager.toggle) {
+                ThemeManager.toggle();
+            } else {
+                const current = document.documentElement.getAttribute('data-theme') || 'light';
+                const next = current === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', next);
+                localStorage.setItem('theme', next);
+                // Update desktop toggle icon if exists
+                const desktopIcon = document.querySelector('#themeToggleDesktop i, #themeToggle i');
+                if (desktopIcon) {
+                    desktopIcon.className = next === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+                }
+            }
+            setTimeout(updateMobileThemeUI, 50);
+        });
+
+        // Sync on load
+        document.addEventListener('DOMContentLoaded', updateMobileThemeUI);
+
+        // ── Auth state sync ──
+        function syncMobileAuth() {
+            const token = localStorage.getItem('auth_token');
+            const user  = JSON.parse(localStorage.getItem('auth_user') || 'null');
+            const isLoggedIn = !!token;
+
+            // Desktop
+            const dAuth  = document.getElementById('authLinksDesktop');
+            const dUser  = document.getElementById('userMenuDesktop');
+            if (dAuth) dAuth.style.display = isLoggedIn ? 'none' : 'flex';
+            if (dUser) {
+                dUser.style.display = isLoggedIn ? 'block' : 'none';
+                if (user) {
+                    const nameEl = dUser.querySelector('.username');
+                    const avEl   = dUser.querySelector('.user-avatar');
+                    if (nameEl) nameEl.textContent = user.username;
+                    if (avEl)   avEl.textContent = user.username.charAt(0).toUpperCase();
+                }
+            }
+
+            // Mobile header
+            const mAuth  = document.getElementById('mobileAuthLinks');
+            const mUser  = document.getElementById('mobileUserMenu');
+            if (mAuth) mAuth.style.display = isLoggedIn ? 'none' : 'flex';
+            if (mUser) {
+                mUser.style.display = isLoggedIn ? 'block' : 'none';
+                if (user) {
+                    const avEl = mUser.querySelector('.mobile-user-avatar span');
+                    if (avEl) avEl.textContent = user.username.charAt(0).toUpperCase();
+                }
+            }
+
+            // Mobile sheet footer
+            const mLogin = document.getElementById('mobileSheetLogin');
+            const mInfo  = document.getElementById('mobileSheetUserInfo');
+            if (mLogin) mLogin.style.display = isLoggedIn ? 'none' : 'flex';
+            if (mInfo)  mInfo.style.display  = isLoggedIn ? 'flex' : 'none';
+            if (mInfo && user) {
+                const nameEl = mInfo.querySelector('.mobile-sheet-user-name');
+                const avEl   = mInfo.querySelector('.mobile-sheet-user-avatar');
+                if (nameEl) nameEl.textContent = user.username;
+                if (avEl)   avEl.textContent = user.username.charAt(0).toUpperCase();
+            }
+
+            // Protected nav links
+            document.querySelectorAll('.protected-link').forEach(function(el) {
+                el.style.display = isLoggedIn ? 'block' : 'none';
+            });
+            document.querySelectorAll('.protected-link-mobile').forEach(function(el) {
+                el.style.display = isLoggedIn ? 'flex' : 'none';
+            });
+
+            // Bottom tab bar (show only when logged in AND on protected pages)
+            const protectedPaths = ['/dashboard', '/transactions', '/predict', '/analytics', '/profile', '/upload'];
+            const onProtected = protectedPaths.some(function(p) { return window.location.pathname.startsWith(p); });
+            if (tabBar) {
+                tabBar.style.display = (isLoggedIn && onProtected) ? 'flex' : 'none';
+            }
+        }
+
+        // Hook into existing AuthManager
         document.addEventListener('DOMContentLoaded', function() {
-            syncSidebarAuth();
+            syncMobileAuth();
             if (window.AuthManager && AuthManager.updateUI) {
                 var orig = AuthManager.updateUI.bind(AuthManager);
                 AuthManager.updateUI = function() {
                     orig();
-                    syncSidebarAuth();
+                    syncMobileAuth();
                 };
             }
         });
+
+        // Close sheet on nav click
+        document.querySelectorAll('.mobile-nav-item').forEach(function(link) {
+            link.addEventListener('click', function() {
+                closeSheet();
+            });
+        });
+
     })();
     </script>
 
