@@ -1,11 +1,12 @@
 /*
- * AI Personal Finance Advisor v2.0 - Premium Stylesheet
+ * AI Personal Finance Advisor v2.0 - Premium Stylesheet (Mobile-Fixed)
  * ======================================================
  * Fintech design with:
  * - Fully fixed Dark/Light theme
  * - Glassmorphism effects
  * - Smooth animations
  * - INR currency support
+ * - Mobile-first responsive fixes
  */
 
 /* ============================================
@@ -86,8 +87,6 @@
     --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
     --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.5);
     --shadow-glow: 0 0 20px rgba(14, 165, 233, 0.2);
-    --bg-input: #0f172a;
-    --bg-table-head: #0f172a;
 }
 
 /* ============================================
@@ -95,7 +94,10 @@
    ============================================ */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+}
 
 body {
     font-family: var(--font-main);
@@ -106,11 +108,12 @@ body {
     flex-direction: column;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
-    transition: background-color var(--transition-base), color var(--transition-base);
 }
 
-/* Smooth theme transitions */
-*, *::before, *::after {
+/* Smooth theme transitions on key elements only (performance-safe) */
+body, .card, .btn, .form-control, .form-select, .nav-link,
+.dropdown-item, .modal-content, .stat-card, .feature-card,
+.navbar, .hero-section, .auth-card, .glass-card {
     transition: background-color var(--transition-base),
                 border-color var(--transition-base),
                 color var(--transition-base),
@@ -131,6 +134,7 @@ body {
 .navbar {
     background: var(--bg-navbar) !important;
     backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid rgba(255,255,255,0.1);
     padding: 0.75rem 0;
     position: sticky;
@@ -187,6 +191,7 @@ body {
     cursor: pointer;
     font-size: 1rem;
     transition: all var(--transition-fast);
+    touch-action: manipulation;
 }
 
 .theme-toggle:hover {
@@ -220,9 +225,10 @@ body {
     font-weight: 600;
     font-size: 0.8rem;
     color: #fff;
+    flex-shrink: 0;
 }
 
-/* Dropdown Menu Fix for Light Mode */
+/* Dropdown Menu Fix for Light/Dark Mode */
 .dropdown-menu {
     background: var(--bg-dropdown) !important;
     border: 1px solid var(--border-color) !important;
@@ -272,6 +278,7 @@ body {
     background: radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%);
     border-radius: 50%;
     animation: float 8s ease-in-out infinite;
+    pointer-events: none;
 }
 
 .hero-section::after {
@@ -284,6 +291,7 @@ body {
     background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
     border-radius: 50%;
     animation: float 10s ease-in-out infinite reverse;
+    pointer-events: none;
 }
 
 @keyframes float {
@@ -321,6 +329,7 @@ body {
 .hero-card {
     background: rgba(255,255,255,0.08);
     backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255,255,255,0.15);
     border-radius: var(--radius-xl);
     padding: 2rem;
@@ -343,10 +352,13 @@ body {
     border: none;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
     font-size: 0.95rem;
     cursor: pointer;
     transition: all var(--transition-fast);
+    touch-action: manipulation;
+    white-space: nowrap;
 }
 
 .btn-primary {
@@ -421,6 +433,7 @@ body {
 .btn-glass {
     background: var(--bg-glass);
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border: 1px solid var(--border-color);
     color: var(--text-primary) !important;
 }
@@ -452,6 +465,11 @@ body {
     padding: 1.2rem 1.5rem;
     font-weight: 600;
     color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
 }
 
 .card-body {
@@ -462,6 +480,7 @@ body {
 .glass-card {
     background: var(--bg-glass);
     backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--border-glass);
     border-radius: var(--radius-lg);
 }
@@ -503,7 +522,7 @@ body {
 
 .stat-icon.primary { background: rgba(14,165,233,0.12); color: var(--accent-primary); }
 .stat-icon.success { background: rgba(16,185,129,0.12); color: var(--accent-success); }
-.stat-icon.danger { background: rgba(239,68,68,0.12); color: var(--accent-danger); }
+.stat-icon.danger  { background: rgba(239,68,68,0.12); color: var(--accent-danger); }
 .stat-icon.warning { background: rgba(245,158,11,0.12); color: var(--accent-warning); }
 
 .stat-value {
@@ -546,9 +565,7 @@ body {
 .feature-card:hover::before { opacity: 1; }
 .feature-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-xl); }
 
-.feature-card h5, .feature-card p {
-    color: var(--text-primary);
-}
+.feature-card h5, .feature-card p { color: var(--text-primary); }
 .feature-card p { color: var(--text-secondary) !important; }
 
 .feature-icon {
@@ -616,6 +633,7 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.5px;
     padding: 1rem;
+    white-space: nowrap;
 }
 
 .table tbody td {
@@ -641,7 +659,7 @@ body {
 }
 
 .bg-success { background-color: rgba(16,185,129,0.15) !important; color: var(--accent-success) !important; }
-.bg-danger { background-color: rgba(239,68,68,0.15) !important; color: var(--accent-danger) !important; }
+.bg-danger  { background-color: rgba(239,68,68,0.15) !important; color: var(--accent-danger) !important; }
 .bg-warning { background-color: rgba(245,158,11,0.15) !important; color: var(--accent-warning) !important; }
 .bg-primary { background-color: rgba(14,165,233,0.15) !important; color: var(--accent-primary) !important; }
 .bg-secondary { background-color: rgba(100,116,139,0.12) !important; color: var(--text-secondary) !important; }
@@ -778,11 +796,13 @@ body {
     width: 800px; height: 800px;
     background: radial-gradient(circle, rgba(14, 165, 233, 0.1) 0%, transparent 70%);
     border-radius: 50%;
+    pointer-events: none;
 }
 
 .auth-card {
     background: rgba(15,23,42,0.75);
     backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
     border: 1px solid rgba(255,255,255,0.12);
     border-radius: var(--radius-xl);
     padding: 2.5rem;
@@ -1014,6 +1034,21 @@ p { color: var(--text-secondary); }
 .text-info { color: var(--accent-info) !important; }
 
 /* ============================================
+   CHARTS & CANVAS
+   ============================================ */
+.chart-container {
+    position: relative;
+    height: 350px;
+    width: 100%;
+}
+
+canvas {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* ============================================
    ANIMATIONS
    ============================================ */
 @keyframes fadeIn {
@@ -1098,23 +1133,6 @@ p { color: var(--text-secondary); }
 .tip-item h6 { color: var(--text-primary); font-size: 0.9rem; margin-bottom: 0.2rem; }
 
 /* ============================================
-   RESPONSIVE
-   ============================================ */
-@media (max-width: 768px) {
-    .hero-title { font-size: 2.2rem; }
-    .hero-subtitle { font-size: 1rem; }
-    .stat-card { margin-bottom: 1rem; }
-    .auth-card { padding: 1.5rem; margin: 1rem; }
-    .navbar-collapse {
-        background: rgba(15, 23, 42, 0.97);
-        backdrop-filter: blur(20px);
-        padding: 1rem;
-        border-radius: var(--radius-lg);
-        margin-top: 0.5rem;
-    }
-}
-
-/* ============================================
    UTILITIES
    ============================================ */
 .text-gradient {
@@ -1131,6 +1149,7 @@ p { color: var(--text-secondary); }
 .glass-effect {
     background: var(--bg-glass);
     backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--border-glass);
 }
 
@@ -1138,44 +1157,70 @@ p { color: var(--text-secondary); }
 .text-white-60 { color: rgba(255,255,255,0.6) !important; }
 .text-white-80 { color: rgba(255,255,255,0.8) !important; }
 
-/* FIX: Improve mobile UI layout and prevent navbar/content overflow */
+/* ============================================
+   RESPONSIVE - MOBILE OPTIMIZED (Consolidated)
+   ============================================ */
 @media (max-width: 768px) {
+    /* --- Layout & Body --- */
     body {
         overflow-x: hidden;
     }
 
+    /* --- Navbar: Professional Mobile Header --- */
     .navbar {
         padding: 0.6rem 0.75rem;
     }
-
     .navbar .container-fluid {
         padding-left: 0.5rem;
         padding-right: 0.5rem;
+        flex-wrap: nowrap;               /* keep logo + toggler in one row */
+        align-items: center;
     }
-
     .navbar-brand {
         font-size: 1.15rem;
+        margin-bottom: 0;                /* FIX: remove forced margin */
+    }
+    .navbar-brand i {
+        font-size: 1.4rem;
     }
 
+    /* FIX: Compact hamburger toggle in top-right (not below logo) */
+    .navbar-toggler {
+        width: 40px;
+        height: 40px;
+        padding: 0.5rem;
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,0.2);
+        margin-left: auto;               /* push to right */
+        order: 1;                      /* ensure right side */
+    }
+    .navbar-toggler-icon {
+        width: 1.1em;
+        height: 1.1em;
+    }
+
+    /* FIX: Clean mobile dropdown menu */
     .navbar-collapse {
         width: 100%;
         max-width: 100%;
         margin-top: 0.75rem;
-        padding: 0.9rem;
+        padding: 1rem;
         border-radius: 16px;
+        background: rgba(15, 23, 42, 0.98);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255,255,255,0.08);
         overflow: hidden;
     }
-
     .navbar-nav {
-        gap: 0.25rem;
+        gap: 0.35rem;
     }
-
     .nav-link {
         width: 100%;
-        padding: 0.75rem 1rem !important;
+        padding: 0.85rem 1rem !important;
         font-size: 0.95rem;
+        border-radius: 10px;
     }
-
     .navbar-collapse .d-flex {
         flex-wrap: wrap;
         justify-content: center;
@@ -1183,45 +1228,108 @@ p { color: var(--text-secondary); }
         gap: 0.75rem !important;
         margin-top: 0.75rem;
     }
-
     #authLinks {
         width: 100%;
         justify-content: center;
     }
-
     #authLinks .btn {
         flex: 1;
-        max-width: 150px;
+        max-width: 160px;
         padding: 0.65rem 0.8rem;
     }
-
     .user-menu {
-        max-width: 110px;
-        padding: 0.35rem 0.55rem;
+        max-width: 130px;
+        padding: 0.4rem 0.6rem;
     }
 
+    /* --- Hero: FIX messy header --- */
+    .hero-section {
+        padding: 40px 0 !important;    /* FIX: tighter padding */
+    }
+    .hero-section::before,
+    .hero-section::after {
+        display: none;                 /* FIX: hide orbs that overflow mobile */
+    }
+    .hero-title {
+        font-size: 1.85rem !important; /* FIX: readable, not giant */
+        letter-spacing: -0.5px;
+        line-height: 1.2;
+        margin-bottom: 1rem;
+    }
+    .hero-subtitle {
+        font-size: 1rem !important;
+        line-height: 1.5;
+        max-width: 100%;
+        margin-bottom: 1.5rem;
+    }
+    .hero-card {
+        padding: 1.25rem;
+        border-radius: var(--radius-lg);
+    }
+
+    /* --- Content --- */
     .page-content {
-        padding-top: 1rem;
+        padding: 1.25rem 0;
     }
-
     .container-fluid {
         padding-left: 1rem !important;
         padding-right: 1rem !important;
     }
 
+    /* --- Stats & Cards --- */
+    .stat-card {
+        padding: 1.25rem;
+        margin-bottom: 0.75rem;
+        border-radius: var(--radius-md);
+    }
+    .stat-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 1.1rem;
+    }
+    .stat-value {
+        font-size: 1.4rem;
+        word-break: break-word;
+    }
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 0.5rem;
+        padding: 1rem;
+    }
+    .card-body {
+        padding: 1rem;
+    }
+
+    /* --- FIX: Charts visible on mobile --- */
+    .chart-container {
+        height: 280px !important;
+    }
+    canvas {
+        max-width: 100% !important;
+        height: auto !important;
+        min-height: 260px !important;  /* FIX: force chart height */
+    }
+
+    /* --- Tables --- */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: var(--radius-md);
+    }
+
+    /* --- Buttons Grid --- */
     .page-content > .container-fluid > .d-flex:first-child {
         flex-direction: column;
         align-items: flex-start !important;
         gap: 1rem;
     }
-
     .page-content > .container-fluid > .d-flex:first-child > .d-flex {
         width: 100%;
         display: grid !important;
         grid-template-columns: 1fr 1fr;
         gap: 0.75rem !important;
     }
-
     .page-content > .container-fluid > .d-flex:first-child .btn {
         width: 100%;
         font-size: 0.9rem;
@@ -1229,101 +1337,95 @@ p { color: var(--text-secondary); }
         white-space: normal;
     }
 
-    .stat-card {
-        padding: 1.25rem;
-        border-radius: 18px;
-        margin-bottom: 0;
+    /* --- Auth --- */
+    .auth-card {
+        padding: 1.5rem;
+        margin: 1rem;
     }
 
-    .stat-icon {
-        width: 44px;
-        height: 44px;
-        font-size: 1.1rem;
-    }
-
-    .stat-value {
-        font-size: 1.45rem;
-        word-break: break-word;
-    }
-
-    .card-header {
-        flex-direction: column;
-        align-items: flex-start !important;
-        gap: 0.5rem;
-        padding: 1rem;
-    }
-
-    .card-body {
-        padding: 1rem;
-    }
-
-    canvas {
-        max-width: 100% !important;
-    }
-
-    .table-responsive {
-        overflow-x: auto;
-    }
-
+    /* --- Footer --- */
     .footer {
         text-align: center;
+        padding: 1.25rem 0;
+    }
+
+    /* --- Toasts --- */
+    .toast-container {
+        top: 80px;
+        right: 10px;
+        left: 10px;
+    }
+    .toast {
+        min-width: unset;
+        width: 100%;
     }
 }
 
+/* ============================================
+   RESPONSIVE - EXTRA SMALL PHONES
+   ============================================ */
 @media (max-width: 480px) {
     .navbar-brand {
-        font-size: 1rem;
+        font-size: 1.05rem;
+    }
+    .navbar-brand i {
+        font-size: 1.25rem;
+    }
+    .navbar-toggler {
+        width: 38px;
+        height: 38px;
     }
 
-    .navbar-brand i {
-        font-size: 1.3rem;
+    .hero-title {
+        font-size: 1.6rem !important;
+    }
+    .hero-subtitle {
+        font-size: 0.95rem !important;
     }
 
     h2 {
-        font-size: 1.65rem;
+        font-size: 1.5rem;
     }
 
     .stat-value {
-        font-size: 1.35rem;
+        font-size: 1.25rem;
+    }
+    .stat-label {
+        font-size: 0.8rem;
     }
 
     .btn {
         font-size: 0.85rem;
-    }
-}
-
-/* FIX: Move mobile hamburger menu below FinanceAI logo on left side */
-
-@media (max-width: 768px) {
-
-    .navbar .container-fluid {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start !important;
+        padding: 0.6rem 1rem;
     }
 
-    .navbar-brand {
-        margin-bottom: 0.75rem;
+    .chart-container {
+        height: 240px !important;
+    }
+    canvas {
+        min-height: 240px !important;
     }
 
-    .navbar-toggler {
-        position: relative !important;
-        top: 0 !important;
-        right: 0 !important;
-        left: 0 !important;
-
-        margin-top: 0.2rem;
-        margin-bottom: 1rem;
-
-        align-self: flex-start !important;
-
-        width: 64px;
-        height: 64px;
-
-        border-radius: 18px;
+    .auth-card {
+        padding: 1.25rem;
+        margin: 0.5rem;
+        border-radius: var(--radius-lg);
     }
 
-    .navbar-collapse {
-        width: 100%;
+    .prediction-badge {
+        font-size: 1.25rem;
+        padding: 0.875rem 1.5rem;
+    }
+
+    .health-score-circle {
+        width: 120px;
+        height: 120px;
+    }
+    .health-score-circle::before {
+        width: 90px;
+        height: 90px;
+    }
+    .health-score-circle span {
+        font-size: 1.6rem;
     }
 }
