@@ -1,19 +1,18 @@
 /*
- * AI Personal Finance Advisor v2.0 - Premium Stylesheet (Mobile-Fixed)
+ * AI Personal Finance Advisor v2.0 - Premium Stylesheet (Mobile-Sidebar Edition)
  * ======================================================
  * Fintech design with:
  * - Fully fixed Dark/Light theme
  * - Glassmorphism effects
  * - Smooth animations
  * - INR currency support
- * - Mobile-first responsive fixes
+ * - Professional mobile full-screen sidebar navigation
  */
 
 /* ============================================
    CSS VARIABLES - THEME SYSTEM
    ============================================ */
 :root {
-    /* Light Theme */
     --bg-primary: #f0f4f8;
     --bg-secondary: #ffffff;
     --bg-card: #ffffff;
@@ -60,7 +59,6 @@
     --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
-/* Dark Theme */
 [data-theme="dark"] {
     --bg-primary: #0f172a;
     --bg-secondary: #1e293b;
@@ -110,7 +108,6 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-/* Smooth theme transitions on key elements only (performance-safe) */
 body, .card, .btn, .form-control, .form-select, .nav-link,
 .dropdown-item, .modal-content, .stat-card, .feature-card,
 .navbar, .hero-section, .auth-card, .glass-card {
@@ -129,7 +126,7 @@ body, .card, .btn, .form-control, .form-select, .nav-link,
 ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
 
 /* ============================================
-   NAVBAR
+   NAVBAR (Desktop)
    ============================================ */
 .navbar {
     background: var(--bg-navbar) !important;
@@ -228,7 +225,7 @@ body, .card, .btn, .form-control, .form-select, .nav-link,
     flex-shrink: 0;
 }
 
-/* Dropdown Menu Fix for Light/Dark Mode */
+/* Dropdown Menu */
 .dropdown-menu {
     background: var(--bg-dropdown) !important;
     border: 1px solid var(--border-color) !important;
@@ -732,7 +729,7 @@ body, .card, .btn, .form-control, .form-select, .nav-link,
 }
 
 /* ============================================
-   MODALS - Full Light/Dark Fix
+   MODALS
    ============================================ */
 .modal-content {
     background: var(--bg-modal) !important;
@@ -885,7 +882,6 @@ body, .card, .btn, .form-control, .form-select, .nav-link,
 
 .password-toggle:hover { color: #fff; }
 
-/* Demo credentials box */
 .demo-box {
     background: rgba(14,165,233,0.1);
     border: 1px solid rgba(14,165,233,0.3);
@@ -980,7 +976,6 @@ body, .card, .btn, .form-control, .form-select, .nav-link,
     color: var(--text-primary);
 }
 
-/* Insight cards on predictions page */
 .insight-card {
     background: var(--bg-secondary);
     border: 1px solid var(--border-color);
@@ -1023,7 +1018,6 @@ body, .card, .btn, .form-control, .form-select, .nav-link,
 .page-header h2 { color: var(--text-primary); }
 .page-header p { color: var(--text-muted); }
 
-/* Ensure text colors */
 h1, h2, h3, h4, h5, h6 { color: var(--text-primary); }
 p { color: var(--text-secondary); }
 .text-muted { color: var(--text-muted) !important; }
@@ -1099,7 +1093,7 @@ canvas {
 }
 
 /* ============================================
-   FINANCIAL TIPS SECTION
+   FINANCIAL TIPS
    ============================================ */
 .tips-section {
     background: var(--bg-secondary);
@@ -1153,105 +1147,224 @@ canvas {
     border: 1px solid var(--border-glass);
 }
 
-/* White text helpers for hero/dark sections */
 .text-white-60 { color: rgba(255,255,255,0.6) !important; }
 .text-white-80 { color: rgba(255,255,255,0.8) !important; }
 
 /* ============================================
-   RESPONSIVE - MOBILE OPTIMIZED (Consolidated)
+   MOBILE NAVBAR - PROFESSIONAL FULL-SCREEN SIDEBAR
    ============================================ */
 @media (max-width: 768px) {
-    /* --- Layout & Body --- */
-    body {
-        overflow-x: hidden;
+    /* --- Body scroll lock when sidebar open --- */
+    body:has(.navbar-collapse.show) {
+        overflow: hidden;
     }
 
-    /* --- Navbar: Professional Mobile Header --- */
+    /* --- Navbar header bar --- */
     .navbar {
         padding: 0.6rem 0.75rem;
     }
     .navbar .container-fluid {
-        padding-left: 0.5rem;
-        padding-right: 0.5rem;
-        flex-wrap: nowrap;               /* keep logo + toggler in one row */
+        display: flex;
+        flex-wrap: nowrap;
         align-items: center;
+        justify-content: space-between;
+        padding: 0;
+        position: relative;
     }
+
+    /* Toggler: far LEFT before logo */
+    .navbar-toggler {
+        order: -1;
+        margin: 0 0.75rem 0 0;
+        width: 42px;
+        height: 42px;
+        padding: 0;
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,0.2);
+        background: rgba(255,255,255,0.06);
+        z-index: 1060;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .navbar-toggler:focus {
+        box-shadow: 0 0 0 3px rgba(14,165,233,0.3);
+    }
+    .navbar-toggler-icon {
+        width: 1.2em;
+        height: 1.2em;
+    }
+
+    /* Logo: immediately after toggler */
     .navbar-brand {
+        order: 0;
+        margin: 0 auto 0 0;
         font-size: 1.15rem;
-        margin-bottom: 0;                /* FIX: remove forced margin */
     }
     .navbar-brand i {
         font-size: 1.4rem;
     }
 
-    /* FIX: Compact hamburger toggle in top-right (not below logo) */
-    .navbar-toggler {
-        width: 40px;
-        height: 40px;
-        padding: 0.5rem;
-        border-radius: 10px;
-        border: 1px solid rgba(255,255,255,0.2);
-        margin-left: auto;               /* push to right */
-        order: 1;                      /* ensure right side */
+    /* Right corner: Get Started + Profile (always visible, outside sidebar) */
+    /* These selectors target auth buttons placed OUTSIDE .navbar-collapse in HTML */
+    .navbar > .container-fluid > .d-flex:not(.navbar-collapse),
+    .navbar > .container-fluid > #authLinks,
+    .navbar > .container-fluid > #userMenu,
+    .navbar > .container-fluid > .navbar-actions {
+        order: 2;
+        display: flex !important;
+        align-items: center;
+        gap: 0.5rem;
+        margin-left: 0.5rem;
+        flex-shrink: 0;
     }
-    .navbar-toggler-icon {
-        width: 1.1em;
-        height: 1.1em;
+    .navbar > .container-fluid > #authLinks .btn,
+    .navbar > .container-fluid > #userMenu .btn {
+        padding: 0.5rem 0.9rem;
+        font-size: 0.85rem;
+        border-radius: 10px;
+    }
+    .navbar > .container-fluid > #userMenu .user-menu {
+        max-width: 120px;
+        padding: 0.3rem 0.5rem;
     }
 
-    /* FIX: Clean mobile dropdown menu */
+    /* --- Full-screen sidebar overlay --- */
     .navbar-collapse {
+        position: fixed;
+        top: 0;
+        left: 0;
         width: 100%;
-        max-width: 100%;
-        margin-top: 0.75rem;
-        padding: 1rem;
-        border-radius: 16px;
-        background: rgba(15, 23, 42, 0.98);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255,255,255,0.08);
-        overflow: hidden;
+        height: 100vh;
+        height: 100dvh;
+        background: linear-gradient(180deg, #0b1120 0%, #0f172a 100%);
+        backdrop-filter: blur(40px);
+        -webkit-backdrop-filter: blur(40px);
+        z-index: 1040;
+        padding: 5.5rem 2rem 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transform: translateX(-100%);
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        border: none;
+        border-radius: 0;
+        margin: 0;
+        overflow-y: auto;
+        box-shadow: none;
     }
+
+    .navbar-collapse.show {
+        transform: translateX(0);
+    }
+
+    /* Visual close hint at top-right of sidebar */
+    .navbar-collapse::before {
+        content: '\2715';
+        position: absolute;
+        top: 1.3rem;
+        right: 1.5rem;
+        font-size: 2rem;
+        color: rgba(255,255,255,0.4);
+        line-height: 1;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    /* Sidebar nav list */
     .navbar-nav {
-        gap: 0.35rem;
+        width: 100%;
+        max-width: 320px;
+        gap: 0.6rem;
+        margin-bottom: 1.5rem;
+    }
+    .nav-item {
+        width: 100%;
     }
     .nav-link {
         width: 100%;
-        padding: 0.85rem 1rem !important;
-        font-size: 0.95rem;
-        border-radius: 10px;
-    }
-    .navbar-collapse .d-flex {
-        flex-wrap: wrap;
+        padding: 1rem 1.5rem !important;
+        font-size: 1.05rem;
+        border-radius: 14px;
+        text-align: center;
         justify-content: center;
-        width: 100%;
-        gap: 0.75rem !important;
-        margin-top: 0.75rem;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.06);
+        color: rgba(255,255,255,0.9) !important;
     }
-    #authLinks {
-        width: 100%;
-        justify-content: center;
+    .nav-link:hover, .nav-link.active {
+        background: rgba(255,255,255,0.1);
+        border-color: rgba(255,255,255,0.15);
+        color: #fff !important;
     }
-    #authLinks .btn {
-        flex: 1;
-        max-width: 160px;
-        padding: 0.65rem 0.8rem;
-    }
-    .user-menu {
-        max-width: 130px;
-        padding: 0.4rem 0.6rem;
+    .nav-link i {
+        font-size: 1.1rem;
     }
 
-    /* --- Hero: FIX messy header --- */
+    /* Theme toggle at TOP of sidebar */
+    .navbar-collapse .theme-toggle {
+        width: 56px;
+        height: 56px;
+        font-size: 1.4rem;
+        margin-bottom: 2rem;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.15);
+        order: -1;
+    }
+    .navbar-collapse .theme-toggle:hover {
+        background: rgba(255,255,255,0.15);
+    }
+
+    /* Divider line before Login */
+    .navbar-collapse .nav-item:last-of-type::after,
+    .navbar-collapse .navbar-nav::after {
+        content: '';
+        display: block;
+        width: 60px;
+        height: 2px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 2px;
+        margin: 1.5rem auto;
+    }
+
+    /* Login button at BOTTOM of sidebar */
+    .navbar-collapse #authLinks {
+        margin-top: auto;
+        width: 100%;
+        max-width: 320px;
+        display: flex;
+        justify-content: center;
+        padding-bottom: 1rem;
+    }
+    .navbar-collapse #authLinks .btn {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1rem;
+        border-radius: 14px;
+    }
+
+    /* User menu inside sidebar (if present) */
+    .navbar-collapse #userMenu {
+        margin-top: auto;
+        width: 100%;
+        max-width: 320px;
+        display: flex;
+        justify-content: center;
+        padding-bottom: 1rem;
+    }
+
+    /* --- Hero fixes --- */
     .hero-section {
-        padding: 40px 0 !important;    /* FIX: tighter padding */
+        padding: 40px 0 !important;
     }
     .hero-section::before,
     .hero-section::after {
-        display: none;                 /* FIX: hide orbs that overflow mobile */
+        display: none;
     }
     .hero-title {
-        font-size: 1.85rem !important; /* FIX: readable, not giant */
+        font-size: 1.85rem !important;
         letter-spacing: -0.5px;
         line-height: 1.2;
         margin-bottom: 1rem;
@@ -1301,14 +1414,14 @@ canvas {
         padding: 1rem;
     }
 
-    /* --- FIX: Charts visible on mobile --- */
+    /* --- Charts visible --- */
     .chart-container {
         height: 280px !important;
     }
     canvas {
         max-width: 100% !important;
         height: auto !important;
-        min-height: 260px !important;  /* FIX: force chart height */
+        min-height: 260px !important;
     }
 
     /* --- Tables --- */
@@ -1318,7 +1431,7 @@ canvas {
         border-radius: var(--radius-md);
     }
 
-    /* --- Buttons Grid --- */
+    /* --- Action buttons grid --- */
     .page-content > .container-fluid > .d-flex:first-child {
         flex-direction: column;
         align-items: flex-start !important;
@@ -1337,7 +1450,7 @@ canvas {
         white-space: normal;
     }
 
-    /* --- Auth --- */
+    /* --- Auth card --- */
     .auth-card {
         padding: 1.5rem;
         margin: 1rem;
@@ -1362,7 +1475,7 @@ canvas {
 }
 
 /* ============================================
-   RESPONSIVE - EXTRA SMALL PHONES
+   EXTRA SMALL PHONES
    ============================================ */
 @media (max-width: 480px) {
     .navbar-brand {

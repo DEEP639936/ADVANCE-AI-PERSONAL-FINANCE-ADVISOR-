@@ -2,7 +2,7 @@
 <html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>{% block title %}AI Finance Advisor{% endblock %}</title>
 
     <!-- Bootstrap 5 CSS -->
@@ -16,6 +16,7 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     {% block extra_css %}{% endblock %}
+<base target="_blank">
 </head>
 <body>
     <!-- Toast Container -->
@@ -24,17 +25,49 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
+            <!-- LEFT: Hamburger toggler (before logo) -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+            </button>
+
+            <!-- Brand -->
             <a class="navbar-brand" href="/">
                 <i class="fas fa-brain"></i>
                 <span>Finance<span class="gradient-text">AI</span></span>
             </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
-            </button>
+            <!-- RIGHT CORNER: Always visible on mobile & desktop -->
+            <div class="navbar-actions ms-auto d-flex align-items-center gap-2">
+                <!-- Get Started (shown when logged out via JS) -->
+                <div id="authLinks" class="d-flex align-items-center gap-2">
+                    <a href="/register" class="btn btn-primary btn-sm">Get Started</a>
+                </div>
 
+                <!-- User Menu (shown when logged in via JS) -->
+                <div id="userMenu" class="dropdown" style="display:none;">
+                    <div class="user-menu" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="user-avatar">U</div>
+                        <span class="username d-none d-md-inline">User</span>
+                        <i class="fas fa-chevron-down" style="font-size:0.7rem;"></i>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="/profile"><i class="fas fa-user me-2"></i>Profile</a></li>
+                        <li><a class="dropdown-item" href="/dashboard"><i class="fas fa-chart-pie me-2"></i>Dashboard</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="#" onclick="AuthManager.logout(); return false;"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- SIDEBAR: Full-screen collapse slides from left -->
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
+                <!-- Theme Toggle (first item at top of sidebar) -->
+                <button class="theme-toggle mx-auto" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+
+                <ul class="navbar-nav mx-auto">
                     <li class="nav-item protected-link" style="display:none;">
                         <a class="nav-link {% if request.path == '/dashboard' %}active{% endif %}" href="/dashboard">
                             <i class="fas fa-chart-pie"></i> Dashboard
@@ -57,32 +90,9 @@
                     </li>
                 </ul>
 
-                <div class="d-flex align-items-center gap-3">
-                    <!-- Theme Toggle -->
-                    <button class="theme-toggle" id="themeToggle" title="Toggle theme">
-                        <i class="fas fa-moon"></i>
-                    </button>
-
-                    <!-- Auth Links (shown when logged out) -->
-                    <div id="authLinks" class="d-flex align-items-center gap-2">
-                        <a href="/login" class="btn btn-outline-light btn-sm">Login</a>
-                        <a href="/register" class="btn btn-primary btn-sm">Get Started</a>
-                    </div>
-
-                    <!-- User Menu (shown when logged in) -->
-                    <div id="userMenu" class="dropdown" style="display:none;">
-                        <div class="user-menu" data-bs-toggle="dropdown">
-                            <div class="user-avatar">U</div>
-                            <span class="username d-none d-md-inline">User</span>
-                            <i class="fas fa-chevron-down" style="font-size:0.7rem;"></i>
-                        </div>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="/profile"><i class="fas fa-user me-2"></i>Profile</a></li>
-                            <li><a class="dropdown-item" href="/dashboard"><i class="fas fa-chart-pie me-2"></i>Dashboard</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="#" onclick="AuthManager.logout(); return false;"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-                        </ul>
-                    </div>
+                <!-- Login at bottom of sidebar (shown when logged out) -->
+                <div id="sidebarAuthLinks" class="d-flex justify-content-center w-100">
+                    <a href="/login" class="btn btn-outline-light w-100">Login</a>
                 </div>
             </div>
         </div>
@@ -110,6 +120,30 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+    <!-- Sync sidebar login visibility with auth state (no app.js changes needed) -->
+    <script>
+    (function() {
+        function syncSidebarAuth() {
+            var sidebarAuth = document.getElementById('sidebarAuthLinks');
+            if (!sidebarAuth) return;
+            var isLoggedIn = !!(localStorage.getItem('auth_token'));
+            sidebarAuth.style.display = isLoggedIn ? 'none' : 'flex';
+        }
+        syncSidebarAuth();
+        document.addEventListener('DOMContentLoaded', function() {
+            syncSidebarAuth();
+            if (window.AuthManager && AuthManager.updateUI) {
+                var orig = AuthManager.updateUI.bind(AuthManager);
+                AuthManager.updateUI = function() {
+                    orig();
+                    syncSidebarAuth();
+                };
+            }
+        });
+    })();
+    </script>
+
     {% block extra_js %}{% endblock %}
 </body>
 </html>
