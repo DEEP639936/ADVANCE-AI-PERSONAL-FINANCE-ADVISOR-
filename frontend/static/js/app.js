@@ -1,13 +1,10 @@
 /**
  * AI Personal Finance Advisor v2.0 - Main JavaScript
  * =================================================
- * Features:
- * - Dark/Light theme toggle with localStorage
- * - Authentication state management
- * - Toast notifications
- * - API helpers with auth headers
- * - Loading animations
- * - INR currency support
+ * FIXES:
+ * - Theme toggle now works on desktop (handles both #themeToggle and #themeToggleDesktop)
+ * - data-theme set on both <html> and <body>
+ * - Auth token loaded synchronously before any page script runs
  */
 
 // ============================================
@@ -18,20 +15,50 @@ const ThemeManager = {
         const savedTheme = localStorage.getItem('theme') || 'light';
         this.setTheme(savedTheme);
 
-        const toggleBtn = document.getElementById('themeToggle');
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', () => this.toggle());
+        // FIX: Handle BOTH possible button IDs (desktop uses themeToggleDesktop)
+        const toggleBtnDesktop = document.getElementById('themeToggleDesktop');
+        const toggleBtnGeneric = document.getElementById('themeToggle');
+
+        if (toggleBtnDesktop) {
+            // Clone to remove any duplicate listeners
+            const newBtn = toggleBtnDesktop.cloneNode(true);
+            toggleBtnDesktop.parentNode.replaceChild(newBtn, toggleBtnDesktop);
+            newBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.toggle();
+            });
+        }
+
+        if (toggleBtnGeneric) {
+            const newBtn = toggleBtnGeneric.cloneNode(true);
+            toggleBtnGeneric.parentNode.replaceChild(newBtn, toggleBtnGeneric);
+            newBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.toggle();
+            });
         }
     },
 
     setTheme(theme) {
+        // FIX: Set on BOTH documentElement and body so all CSS vars apply
         document.documentElement.setAttribute('data-theme', theme);
+        document.body.setAttribute('data-theme', theme);
         localStorage.setItem('theme', theme);
 
-        const icon = document.querySelector('#themeToggle i');
-        if (icon) {
-            icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        // Update desktop toggle icon
+        const desktopIcon = document.querySelector('#themeToggleDesktop i');
+        if (desktopIcon) {
+            desktopIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
         }
+
+        // Update generic toggle icon
+        const genericIcon = document.querySelector('#themeToggle i');
+        if (genericIcon) {
+            genericIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
         // Refresh charts when theme changes
         if (typeof window.refreshChartsForTheme === 'function') {
             window.refreshChartsForTheme(theme);
@@ -53,8 +80,8 @@ const ThemeManager = {
 // AUTHENTICATION MANAGEMENT
 // ============================================
 const AuthManager = {
-    token: null,
-    user: null,
+    token: localStorage.getItem('auth_token'),   // FIX: load synchronously
+    user: JSON.parse(localStorage.getItem('auth_user') || 'null'),  // FIX: load synchronously
 
     init() {
         this.token = localStorage.getItem('auth_token');
@@ -84,24 +111,42 @@ const AuthManager = {
 
     updateUI() {
         const authLinks = document.getElementById('authLinks');
+        const authLinksDesktop = document.getElementById('authLinksDesktop');
         const userMenu = document.getElementById('userMenu');
+        const userMenuDesktop = document.getElementById('userMenuDesktop');
         const protectedLinks = document.querySelectorAll('.protected-link');
 
-        if (this.isLoggedIn() && this.user) {
-            if (authLinks) authLinks.style.display = 'none';
-            if (userMenu) {
-                userMenu.style.display = 'flex';
+        const loggedIn = this.isLoggedIn() && this.user;
+
+        // Generic auth links (if page uses old ids)
+        if (authLinks) authLinks.style.display = loggedIn ? 'none' : 'flex';
+
+        // Desktop auth links
+        if (authLinksDesktop) authLinksDesktop.style.display = loggedIn ? 'none' : 'flex';
+
+        // Generic user menu
+        if (userMenu) {
+            userMenu.style.display = loggedIn ? 'flex' : 'none';
+            if (loggedIn) {
                 const usernameEl = userMenu.querySelector('.username');
-                const avatarEl = userMenu.querySelector('.user-avatar');
+                const avatarEl   = userMenu.querySelector('.user-avatar');
                 if (usernameEl) usernameEl.textContent = this.user.username;
-                if (avatarEl) avatarEl.textContent = this.user.username.charAt(0).toUpperCase();
+                if (avatarEl)   avatarEl.textContent = this.user.username.charAt(0).toUpperCase();
             }
-            protectedLinks.forEach(el => el.style.display = 'block');
-        } else {
-            if (authLinks) authLinks.style.display = 'flex';
-            if (userMenu) userMenu.style.display = 'none';
-            protectedLinks.forEach(el => el.style.display = 'none');
         }
+
+        // Desktop user menu
+        if (userMenuDesktop) {
+            userMenuDesktop.style.display = loggedIn ? 'block' : 'none';
+            if (loggedIn) {
+                const usernameEl = userMenuDesktop.querySelector('.username');
+                const avatarEl   = userMenuDesktop.querySelector('.user-avatar');
+                if (usernameEl) usernameEl.textContent = this.user.username;
+                if (avatarEl)   avatarEl.textContent = this.user.username.charAt(0).toUpperCase();
+            }
+        }
+
+        protectedLinks.forEach(el => el.style.display = loggedIn ? 'block' : 'none');
     },
 
     getAuthHeaders() {
@@ -146,9 +191,9 @@ const ToastManager = {
 
         const icons = {
             success: 'fa-check-circle',
-            error: 'fa-exclamation-circle',
+            error:   'fa-exclamation-circle',
             warning: 'fa-exclamation-triangle',
-            info: 'fa-info-circle'
+            info:    'fa-info-circle'
         };
 
         toast.innerHTML = `
@@ -277,6 +322,3 @@ document.addEventListener('DOMContentLoaded', () => {
     tooltipTriggerList.forEach(el => new bootstrap.Tooltip(el));
 });
 
-
-AuthManager.token = localStorage.getItem('auth_token');
-AuthManager.user  = JSON.parse(localStorage.getItem('auth_user') || 'null');

@@ -19,7 +19,7 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     {% block extra_css %}{% endblock %}
-<base target="_blank">
+    <!-- FIX BUG 1: REMOVED <base target="_blank"> — it was forcing every link to open in a new tab -->
 </head>
 <body>
     <!-- Toast Container -->
@@ -60,7 +60,9 @@
                 </ul>
 
                 <div class="d-flex align-items-center gap-3">
-                    <button class="theme-toggle" id="themeToggleDesktop" title="Toggle theme" aria-label="Toggle theme">
+                    <!-- FIX BUG 2: Changed id from "themeToggleDesktop" to "themeToggle"
+                         so app.js ThemeManager.init() can find and attach the click listener -->
+                    <button class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">
                         <i class="fas fa-moon"></i>
                     </button>
 
@@ -325,9 +327,9 @@
                 const current = document.documentElement.getAttribute('data-theme') || 'light';
                 const next = current === 'dark' ? 'light' : 'dark';
                 document.documentElement.setAttribute('data-theme', next);
+                document.body.setAttribute('data-theme', next);
                 localStorage.setItem('theme', next);
-                // Update desktop toggle icon if exists
-                const desktopIcon = document.querySelector('#themeToggleDesktop i, #themeToggle i');
+                const desktopIcon = document.querySelector('#themeToggle i');
                 if (desktopIcon) {
                     desktopIcon.className = next === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
                 }
