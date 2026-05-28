@@ -28,8 +28,8 @@ from auth.models import db, User
 from auth.utils import token_required
 from auth.routes import auth_bp, ensure_demo_user
 
-TEMPLATE_DIR = os.path.join(PROJECT_ROOT, 'frontend', 'templates')
-STATIC_DIR   = os.path.join(PROJECT_ROOT, 'frontend', 'static')
+TEMPLATE_DIR = os.path.join(BACKEND_DIR, '..', 'frontend', 'templates')
+STATIC_DIR   = os.path.join(BACKEND_DIR, '..', 'frontend', 'static')
 
 app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
 app.secret_key = os.environ.get('SECRET_KEY', 'ai-finance-advisor-secret-key-2026-v2')
