@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 """
-ML Prediction Engine
-===================
-Handles all model loading, preprocessing, and inference.
-Provides clean API for the Flask backend.
+ML Prediction Engine (FIXED v2.1)
+=================================
+- Graceful handling when model files are missing
+- Auto-trains models if .pkl files not found
+- Fixed INR currency symbol in savings suggestion
+- Better error messages for debugging
 """
 
 import os
+import sys
 import joblib
 import numpy as np
 import pandas as pd
@@ -19,42 +22,112 @@ from datetime import datetime
 _MODELS = {}
 _SCALERS = {}
 _ENCODERS = {}
-_FEATURES = {}
+_FEATURE_COLS = {}
+_MODELS_LOADED = False
+_MODEL_ERROR = None
 
 def _get_model_dir():
     return os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'model')
 
+def _list_missing_models():
+    """Check which model files are missing."""
+    mdir = _get_model_dir()
+    required = {
+        'expense_classifier.pkl': 'classifier',
+        'health_score_model.pkl': 'health',
+        'budget_model.pkl': 'budget',
+        'scaler_classifier.pkl': 'scaler_classifier',
+        'scaler_health.pkl': 'scaler_health',
+        'scaler_budget.pkl': 'scaler_budget',
+        'label_encoder_category.pkl': 'le_category',
+        'label_encoder_income.pkl': 'le_income',
+        'label_encoder_age.pkl': 'le_age',
+        'feature_cols_classifier.pkl': 'features_classifier',
+        'feature_cols_health.pkl': 'features_health',
+        'feature_cols_budget.pkl': 'features_budget',
+    }
+    missing = []
+    for fname, key in required.items():
+        if not os.path.exists(os.path.join(mdir, fname)):
+            missing.append(fname)
+    return missing
+
+def _auto_train_models():
+    """Automatically run training if models are missing."""
+    train_script = os.path.join(_get_model_dir(), 'train_model.py')
+    if os.path.exists(train_script):
+        print("[INFO] Model files missing. Auto-training models...")
+        # Execute training in a subprocess to avoid import conflicts
+        import subprocess
+        result = subprocess.run(
+            [sys.executable, train_script],
+            capture_output=True,
+            text=True,
+            cwd=os.path.dirname(train_script)
+        )
+        if result.returncode != 0:
+            print("[ERROR] Auto-training failed:", result.stderr)
+            return False
+        print("[INFO] Auto-training completed successfully.")
+        return True
+    return False
+
 def _load_all():
     """Load all models, scalers, encoders, and feature lists once."""
-    global _MODELS, _SCALERS, _ENCODERS, _FEATURES
-    if _MODELS:
-        return
+    global _MODELS, _SCALERS, _ENCODERS, _FEATURE_COLS, _MODELS_LOADED, _MODEL_ERROR
+    if _MODELS_LOADED:
+        return True
 
     mdir = _get_model_dir()
+    os.makedirs(mdir, exist_ok=True)
 
-    # Models
-    _MODELS['classifier'] = joblib.load(os.path.join(mdir, 'expense_classifier.pkl'))
-    _MODELS['health'] = joblib.load(os.path.join(mdir, 'health_score_model.pkl'))
-    _MODELS['budget'] = joblib.load(os.path.join(mdir, 'budget_model.pkl'))
+    # Check for missing files
+    missing = _list_missing_models()
+    if missing:
+        print(f"[WARN] Missing model files: {missing}")
+        # Try auto-training
+        if _auto_train_models():
+            missing = _list_missing_models()
+        if missing:
+            _MODEL_ERROR = f"Missing model files: {', '.join(missing)}. Please run: cd backend/model && python train_model.py"
+            print(f"[ERROR] {_MODEL_ERROR}")
+            return False
 
-    # Scalers
-    _SCALERS['classifier'] = joblib.load(os.path.join(mdir, 'scaler_classifier.pkl'))
-    _SCALERS['health'] = joblib.load(os.path.join(mdir, 'scaler_health.pkl'))
-    _SCALERS['budget'] = joblib.load(os.path.join(mdir, 'scaler_budget.pkl'))
+    try:
+        # Models
+        _MODELS['classifier'] = joblib.load(os.path.join(mdir, 'expense_classifier.pkl'))
+        _MODELS['health'] = joblib.load(os.path.join(mdir, 'health_score_model.pkl'))
+        _MODELS['budget'] = joblib.load(os.path.join(mdir, 'budget_model.pkl'))
 
-    # Encoders
-    _ENCODERS['category'] = joblib.load(os.path.join(mdir, 'label_encoder_category.pkl'))
-    _ENCODERS['income'] = joblib.load(os.path.join(mdir, 'label_encoder_income.pkl'))
-    _ENCODERS['age'] = joblib.load(os.path.join(mdir, 'label_encoder_age.pkl'))
+        # Scalers
+        _SCALERS['classifier'] = joblib.load(os.path.join(mdir, 'scaler_classifier.pkl'))
+        _SCALERS['health'] = joblib.load(os.path.join(mdir, 'scaler_health.pkl'))
+        _SCALERS['budget'] = joblib.load(os.path.join(mdir, 'scaler_budget.pkl'))
 
-    # Feature lists
-    _FEATURES['classifier'] = joblib.load(os.path.join(mdir, 'feature_cols_classifier.pkl'))
-    _FEATURES['health'] = joblib.load(os.path.join(mdir, 'feature_cols_health.pkl'))
-    _FEATURES['budget'] = joblib.load(os.path.join(mdir, 'feature_cols_budget.pkl'))
+        # Encoders
+        _ENCODERS['category'] = joblib.load(os.path.join(mdir, 'label_encoder_category.pkl'))
+        _ENCODERS['income'] = joblib.load(os.path.join(mdir, 'label_encoder_income.pkl'))
+        _ENCODERS['age'] = joblib.load(os.path.join(mdir, 'label_encoder_age.pkl'))
+
+        # Feature lists
+        _FEATURE_COLS['classifier'] = joblib.load(os.path.join(mdir, 'feature_cols_classifier.pkl'))
+        _FEATURE_COLS['health'] = joblib.load(os.path.join(mdir, 'feature_cols_health.pkl'))
+        _FEATURE_COLS['budget'] = joblib.load(os.path.join(mdir, 'feature_cols_budget.pkl'))
+
+        _MODELS_LOADED = True
+        _MODEL_ERROR = None
+        print("[INFO] All ML models loaded successfully.")
+        return True
+    except Exception as e:
+        _MODEL_ERROR = f"Failed to load models: {str(e)}"
+        print(f"[ERROR] {_MODEL_ERROR}")
+        return False
 
 def _ensure_loaded():
-    if not _MODELS:
-        _load_all()
+    if not _MODELS_LOADED:
+        success = _load_all()
+        if not success:
+            raise RuntimeError(_MODEL_ERROR or "ML models not available. Please train models first.")
 
 # ---------------------------------------------------------------------------
 # FEATURE ENGINEERING (must match training exactly)
@@ -69,7 +142,10 @@ def _engineer_single_row(raw_data):
 
     # Parse date if provided
     if 'date' in d and d['date']:
-        dt = datetime.strptime(str(d['date']), '%Y-%m-%d')
+        try:
+            dt = datetime.strptime(str(d['date']), '%Y-%m-%d')
+        except ValueError:
+            dt = datetime.now()
     else:
         dt = datetime.now()
 
@@ -84,26 +160,33 @@ def _engineer_single_row(raw_data):
     # Income level encoding
     income_level = d.get('income_level', 'Medium')
     le_income = _ENCODERS['income']
+    # Handle unseen labels gracefully
+    if income_level not in le_income.classes_:
+        income_level = le_income.classes_[0]
     income_level_encoded = le_income.transform([income_level])[0]
 
     # Age group encoding
-    age = d.get('age', 30)
+    age = int(d.get('age', 30))
     age_group = pd.cut([age], bins=[0, 25, 35, 50, 100], labels=['Young', 'EarlyCareer', 'MidCareer', 'Senior'])[0]
+    age_group_str = str(age_group)
     le_age = _ENCODERS['age']
-    age_group_encoded = le_age.transform([str(age_group)])[0]
+    # Handle unseen labels gracefully
+    if age_group_str not in le_age.classes_:
+        age_group_str = le_age.classes_[0]
+    age_group_encoded = le_age.transform([age_group_str])[0]
 
     # Ratios
     monthly_income = float(d.get('monthly_income', 5000))
     amount = float(d.get('amount', 50))
-    existing_savings = float(d.get('existing_savings', 5000))
+    existing_savings = float(d.get('existing_savings', d.get('current_savings', 5000)))
     debt_to_income = float(d.get('debt_to_income', 0.15))
     prev_month_expenses = float(d.get('prev_month_expenses', monthly_income * 0.7))
     prev_month_savings = monthly_income - prev_month_expenses
 
-    amount_to_income_ratio = amount / monthly_income
-    savings_to_income_ratio = existing_savings / monthly_income
-    expense_stability = prev_month_expenses / (monthly_income * 0.8)
-    savings_rate = prev_month_savings / monthly_income
+    amount_to_income_ratio = amount / monthly_income if monthly_income > 0 else 0
+    savings_to_income_ratio = existing_savings / monthly_income if monthly_income > 0 else 0
+    expense_stability = prev_month_expenses / (monthly_income * 0.8) if monthly_income > 0 else 0
+    savings_rate = prev_month_savings / monthly_income if monthly_income > 0 else 0
 
     high_expense_flag = 1 if amount > monthly_income * 0.1 else 0
     low_savings_flag = 1 if savings_to_income_ratio < 0.1 else 0
@@ -150,7 +233,7 @@ def predict_category(raw_data):
     features = _engineer_single_row(raw_data)
 
     # Build DataFrame with exact feature order
-    X = pd.DataFrame([{k: features[k] for k in _FEATURES['classifier']}])
+    X = pd.DataFrame([{k: features[k] for k in _FEATURE_COLS['classifier']}])
     X_scaled = _SCALERS['classifier'].transform(X)
 
     pred = _MODELS['classifier'].predict(X_scaled)[0]
@@ -176,7 +259,7 @@ def predict_health_score(raw_data):
     _ensure_loaded()
     features = _engineer_single_row(raw_data)
 
-    X = pd.DataFrame([{k: features[k] for k in _FEATURES['health']}])
+    X = pd.DataFrame([{k: features[k] for k in _FEATURE_COLS['health']}])
     X_scaled = _SCALERS['health'].transform(X)
 
     score = float(_MODELS['health'].predict(X_scaled)[0])
@@ -208,7 +291,7 @@ def predict_budget(raw_data):
     _ensure_loaded()
     features = _engineer_single_row(raw_data)
 
-    X = pd.DataFrame([{k: features[k] for k in _FEATURES['budget']}])
+    X = pd.DataFrame([{k: features[k] for k in _FEATURE_COLS['budget']}])
     X_scaled = _SCALERS['budget'].transform(X)
 
     budget_pct = float(_MODELS['budget'].predict(X_scaled)[0])
@@ -289,11 +372,12 @@ def generate_savings_suggestion(monthly_income, current_savings, target_months=6
     suggested_monthly = monthly_income * 0.20
     months_needed = int(np.ceil(gap / suggested_monthly))
 
+    # FIXED: Use INR symbol ₹ instead of $
     return {
         'target_emergency_fund': round(target_amount, 2),
         'current_savings': round(current_savings, 2),
         'gap': round(gap, 2),
         'monthly_savings_needed': round(suggested_monthly, 2),
         'months_to_target': months_needed,
-        'message': f"Save ${suggested_monthly:.2f}/month to reach your goal in {months_needed} months."
+        'message': f"Save ₹{suggested_monthly:.2f}/month to reach your goal in {months_needed} months."
     }

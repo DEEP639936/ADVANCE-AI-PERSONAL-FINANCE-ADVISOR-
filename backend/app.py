@@ -194,27 +194,48 @@ def clear_transactions():
 @app.route('/api/predict/all', methods=['POST'])
 @token_required
 def api_predict_all():
-    data = request.get_json()
-    user = db.session.get(User, request.user_id)
-    if user:
-        data.setdefault('monthly_income', user.monthly_income)
-        data.setdefault('age', user.age)
-        data.setdefault('existing_savings', user.existing_savings)
-        data.setdefault('debt_to_income', user.debt_to_income)
-        data.setdefault('income_level', user.income_level)
-    result = predict_all(data)
-    return jsonify({'success': True, 'predictions': result})
-
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'success': False, 'message': 'No data provided'}), 400
+        
+        user = db.session.get(User, request.user_id)
+        if user:
+            data.setdefault('monthly_income', user.monthly_income)
+            data.setdefault('age', user.age)
+            data.setdefault('existing_savings', user.existing_savings)
+            data.setdefault('debt_to_income', user.debt_to_income)
+            data.setdefault('income_level', user.income_level)
+        
+        result = predict_all(data)
+        return jsonify({'success': True, 'predictions': result})
+    except RuntimeError as e:
+        # ML models not loaded/trained
+        return jsonify({'success': False, 'message': str(e)}), 503
+    except Exception as e:
+        import traceback
+        print("[ERROR] /api/predict/all failed:")
+        traceback.print_exc()
+        return jsonify({'success': False, 'message': f'Prediction engine error: {str(e)}'}), 500
 
 @app.route('/api/predict/savings', methods=['POST'])
 @token_required
 def api_predict_savings():
-    data = request.get_json()
-    user = db.session.get(User, request.user_id)
-    monthly_income  = float(data.get('monthly_income',  user.monthly_income  if user else 50000))
-    current_savings = float(data.get('current_savings', user.existing_savings if user else 0))
-    result = generate_savings_suggestion(monthly_income, current_savings)
-    return jsonify({'success': True, 'suggestion': result})
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'success': False, 'message': 'No data provided'}), 400
+            
+        user = db.session.get(User, request.user_id)
+        monthly_income = float(data.get('monthly_income', user.monthly_income if user else 50000))
+        current_savings = float(data.get('current_savings', user.existing_savings if user else 0))
+        result = generate_savings_suggestion(monthly_income, current_savings)
+        return jsonify({'success': True, 'suggestion': result})
+    except Exception as e:
+        import traceback
+        print("[ERROR] /api/predict/savings failed:")
+        traceback.print_exc()
+        return jsonify({'success': False, 'message': f'Savings calculation error: {str(e)}'}), 500
 
 # ---------------------------------------------------------------------------
 # API - DASHBOARD & ANALYTICS
